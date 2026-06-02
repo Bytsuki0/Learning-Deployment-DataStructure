@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Define uma chave secreta (necessária para usar mensagens flash e sessões)
-app.secret_key = 'minha_chave_secreta'
+app.secret_key = '153226@#'  # <-- troque aqui por uma chave mais segura em produção
 
 # Inicializa a extensão MySQL
 mysql.init_app(app)
