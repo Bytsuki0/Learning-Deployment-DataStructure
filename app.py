@@ -80,6 +80,5 @@ def cadastro_usuario():
 # 🚀 EXECUÇÃO LOCAL DO APP
 # =============================
 if __name__ == '__main__':
-    # Executa o servidor Flask em modo debug
-    # (atualiza automaticamente ao salvar alterações)
+
     app.run(debug=True)
