@@ -6,6 +6,17 @@
 </head>
 <body class="container mt-5">
 
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <!-- Lista simples de mensagens -->
+        <ul class="alert alert-info">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
     <h1 class="text-center mb-4">Bem-vindo à Biblioteca</h1>
 
     <div class="list-group">

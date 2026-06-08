@@ -33,7 +33,7 @@ def cadastro_usuario():
         try:
             adicionar_usuario(cpf, rg, nome, telefone, celular, endereco)
             flash('Usuário cadastrado com sucesso!')
-            return redirect(url_for('usuarios'))
+            return redirect(url_for('index'))
         except Exception as e:
             flash(f'Erro ao cadastrar usuário: {e}')
             return redirect(url_for('cadastro_usuario'))
@@ -55,7 +55,7 @@ def cadastro_emprestimo():
                                  quantidade_de_livros,
                                  fk_usuario_cpf, fk_usuario_rg)
             flash('Empréstimo cadastrado com sucesso!')
-            return redirect(url_for('emprestimos'))
+            return redirect(url_for('index'))
         except Exception as e:
             # BUG FIX 2: rollback so the broken transaction doesn't block the next request
             mysql.connection.rollback()

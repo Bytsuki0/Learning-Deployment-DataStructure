@@ -21,16 +21,7 @@
         Exibe mensagens enviadas pelo Flask usando flash().
         Essas mensagens aparecem quando o cadastro é bem-sucedido ou ocorre erro.
     -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <!-- Lista simples de mensagens -->
-        <ul class="alert alert-info">
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    
 
     <!-- 
         Formulário de cadastro.
@@ -92,8 +83,5 @@
         </div>
     </form>
 
-    <!-- Espaçamento e link adicional de retorno -->
-    <br>
-    <a href="/" class="btn btn-secondary">Voltar</a>
 </body>
 </html>
