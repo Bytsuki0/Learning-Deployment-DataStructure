@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Profissionais{% endblock %}
+{% block page_title %}Profissionais de Enfermaria{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('cadastro_profissional') }}" class="btn btn-teal">
+        <i class="bi bi-plus-lg me-1"></i> Novo Profissional
+    </a>
+</div>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-person-badge"></i>
+        <strong>Lista de Profissionais</strong>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Função</th>
+                    <th>Especialidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pr in profissionais %}
+                <tr>
+                    <td><span class="badge-base badge-info">{{ pr['Codigo_profissional'] }}</span></td>
+                    <td><strong>{{ pr['Nome'] }}</strong></td>
+                    <td>{{ pr['Funcao'] or '—' }}</td>
+                    <td>{{ pr['Especialidade'] or '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4"><div class="empty-state"><i class="bi bi-person-x"></i>Nenhum profissional cadastrado.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

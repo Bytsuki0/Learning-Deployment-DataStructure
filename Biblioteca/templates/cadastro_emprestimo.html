@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Empréstimo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+
+    <h1 class="mb-4">Cadastrar Empréstimo</h1>
+
+    <form action="{{ url_for('cadastro_emprestimo') }}" method="POST" class="card p-4 shadow-sm">
+        <div class="row mb-3">
+
+            <div class="col-md-6">
+                <label class="form-label">Código do Empréstimo</label>
+                <input type="text" name="codigo" class="form-control" required>
+            </div>
+
+
+            <div class="col-md-6">
+                <label class="form-label">CPF do Usuário</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="fk_usuario_cpf"
+                    required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">RG do Usuário</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="fk_usuario_rg"
+                    required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Data do Empréstimo</label>
+            <input type="date" name="data_do_emprestimo" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Data da Devolução</label>
+            <input type="date" name="data_da_devolucao" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quantidade de Livros</label>
+            <input type="number" name="quantidade_de_livros" class="form-control" min="1" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Empréstimo</button>
+        <a href="/" class="btn btn-secondary">Voltar</a>
+    </form>
+
+</body>
+</html>
