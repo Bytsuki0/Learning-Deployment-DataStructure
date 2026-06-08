@@ -1,84 +1,68 @@
-# Importa as principais funções e classes do Flask
-# - Flask: cria a aplicação
-# - render_template: renderiza páginas HTML da pasta /templates
-# - request: acessa dados enviados por formulários (POST/GET)
-# - redirect e url_for: redirecionam para outras rotas
-# - flash: mostra mensagens temporárias ao usuário (ex: sucesso ou erro)
 from flask import Flask, render_template, request, redirect, url_for, flash
-
-# Importa configurações (por exemplo: conexão com banco de dados)
 from config import Config
+from models import mysql, get_all_emprestimos, get_all_usuarios, adicionar_usuario, adicionar_emprestimo
 
-# Importa o objeto MySQL e funções auxiliares de manipulação de dados
-from models import mysql, get_all_emprestimos, get_all_usuarios, adicionar_usuario
-
-
-# Cria a aplicação Flask
 app = Flask(__name__)
-
-# Carrega configurações do arquivo config.py (ex: dados do banco)
 app.config.from_object(Config)
-
-# Define uma chave secreta (necessária para usar mensagens flash e sessões)
-app.secret_key = '153226@#'  # <-- troque aqui por uma chave mais segura em produção
-
-# Inicializa a extensão MySQL
+app.secret_key = '153226@#'
 mysql.init_app(app)
 
-# Rota principal
 @app.route('/')
 def index():
-    # Renderiza o template index.html
     return render_template('index.html')
 
-# Rota para exibir os empréstimos com detalhes (usando a view SQL)
 @app.route('/emprestimos')
 def emprestimos():
-    # Busca os dados no banco de dados via função auxiliar
     dados = get_all_emprestimos()
-    # Passa os dados para o template emprestimos.html
-    return render_template('emprestimos.html', 
-                           emprestimos=dados)
-
+    return render_template('emprestimos.html', emprestimos=dados)
 
 @app.route('/usuarios')
 def usuarios():
     dados = get_all_usuarios()
-    return render_template('usuarios.html',
-                            usuarios=dados)
+    return render_template('usuarios.html', usuarios=dados)
 
-# Rota para cadastrar novos usuários
-# Aceita tanto GET (mostrar formulário) 
-# quanto POST (enviar dados)
 @app.route('/cadastro_usuario', methods=['GET', 'POST'])
 def cadastro_usuario():
-    # Se o formulário for enviado (POST)
     if request.method == 'POST':
-        # Captura os dados do formulário
         cpf = request.form['cpf']
         rg = request.form['rg']
         nome = request.form['nome']
         telefone = request.form['telefone']
         celular = request.form['celular']
         endereco = request.form['endereco']
-
         try:
-            # Tenta inserir o novo usuário no banco
-            adicionar_usuario(cpf, rg, nome,
-                               telefone, celular,
-                                 endereco)
-            # Mostra mensagem de sucesso
+            adicionar_usuario(cpf, rg, nome, telefone, celular, endereco)
             flash('Usuário cadastrado com sucesso!')
-            # Redireciona para a página de usuários
             return redirect(url_for('usuarios'))
         except Exception as e:
             flash(f'Erro ao cadastrar usuário: {e}')
             return redirect(url_for('cadastro_usuario'))
     return render_template('cadastro_usuario.html')
 
-# =============================
-# 🚀 EXECUÇÃO LOCAL DO APP
-# =============================
-if __name__ == '__main__':
+# BUG FIX 1: function name changed from cadastrar_emprestimo to cadastro_emprestimo
+# so it matches the url_for() calls in the HTML and in the except redirect below
+@app.route('/cadastro_emprestimo', methods=['GET', 'POST'])
+def cadastro_emprestimo():
+    if request.method == 'POST':
+        fk_usuario_cpf = request.form['fk_usuario_cpf']
+        fk_usuario_rg = request.form['fk_usuario_rg']
+        data_do_emprestimo = request.form['data_do_emprestimo']
+        data_da_devolucao = request.form['data_da_devolucao']
+        quantidade_de_livros = request.form['quantidade_de_livros']
+        codigo = request.form['codigo']
+        try:
+            adicionar_emprestimo(codigo, data_do_emprestimo, data_da_devolucao,
+                                 quantidade_de_livros,
+                                 fk_usuario_cpf, fk_usuario_rg)
+            flash('Empréstimo cadastrado com sucesso!')
+            return redirect(url_for('emprestimos'))
+        except Exception as e:
+            # BUG FIX 2: rollback so the broken transaction doesn't block the next request
+            mysql.connection.rollback()
+            flash(f'Erro ao cadastrar empréstimo: {e}')
+            # BUG FIX 1 (continued): url_for now matches the function name above
+            return redirect(url_for('cadastro_emprestimo'))
+    return render_template('cadastro_emprestimo.html', usuarios=get_all_usuarios())
 
+if __name__ == '__main__':
     app.run(debug=True)

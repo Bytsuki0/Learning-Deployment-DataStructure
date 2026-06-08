@@ -1,57 +1,66 @@
-# Importa a classe MySQL do pacote flask_mysqldb
-# Essa classe faz a ponte entre o Flask e o banco de dados MySQL
-from flask_mysqldb import MySQL
+# models.py
 
-# Cria a instância do MySQL
-# Essa instância será inicializada posteriormente no app Flask
-# Exemplo no app.py:
-#   mysql.init_app(app)
+from flask_mysqldb import MySQL
+from MySQLdb.cursors import DictCursor
+
 mysql = MySQL()
 
 def get_all_emprestimos():
-    # Cria um cursor a partir da conexão MySQL
-    # O cursor é usado para executar comandos SQL
-    cur = mysql.connection.cursor()
-    # Executa a consulta SQL que seleciona todos os registros
-    # da tabela 'emprestimo'
-    cur.execute("SELECT * FROM emprestimo")
-    # Recupera todos os registros retornados pela consulta
-    # O resultado será normalmente uma lista de tuplas
-    result = cur.fetchall()
-    # Fecha o cursor para liberar recursos do banco de dados
-    cur.close()
-    # Retorna os dados obtidos na consulta
-    return result
-
-def get_all_usuarios() -> object:
-    # Cria um cursor a partir da conexão MySQL
-    # Esse cursor permitirá executar comandos SQL
-    cur = mysql.connection.cursor()
-    # Executa a consulta SQL que seleciona todos os registros
-    # da tabela 'usuario'
-    cur.execute("SELECT * FROM usuario")
-    # Recupera todos os registros retornados pela consulta
-    # O resultado geralmente é uma lista de tuplas
-    result = cur.fetchall()
-    # Fecha o cursor após o uso para evitar vazamento de recursos
-    cur.close()
-    # Retorna a lista de usuários obtida do banco
-    return result
-
-def adicionar_usuario(cpf, rg, nome, telefone, 
-                      celular, endereco):
-    # Cria um cursor a partir da conexão MySQL
-    # Ele será usado para executar o comando INSERT
-    cur = mysql.connection.cursor()
-    # Executa o comando SQL de inserção de um novo usuário
-    # Os %s são placeholders que evitam SQL Injection
-    # Os valores reais são passados separadamente na tupla
+    cur = mysql.connection.cursor(DictCursor)
     cur.execute("""
-        INSERT INTO usuario (CPF, RG, Nome, 
-                Telefone, Celular, Endereco)
+        SELECT
+            e.Codigo,
+            e.Data_do_Emprestimo,
+            e.Data_da_Devolucao,
+            e.FK_Usuario_CPF,
+            e.FK_Usuario_RG,
+            u.Nome AS Usuario_Nome,
+            u.Telefone AS Usuario_Telefone,
+            u.Celular AS Usuario_Celular,
+            u.Endereco AS Usuario_Endereco
+        FROM emprestimo e
+        INNER JOIN usuario u
+            ON e.FK_Usuario_CPF = u.CPF
+           AND e.FK_Usuario_RG = u.RG
+        ORDER BY e.Codigo DESC
+    """)
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def get_all_usuarios():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM usuario")
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def adicionar_usuario(cpf, rg, nome, telefone, celular, endereco):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO usuario (CPF, RG, Nome, Telefone, Celular, Endereco)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (cpf, rg, nome, telefone, celular, endereco))
-    # Confirma a transação, salvando definitivamente os dados no banco
     mysql.connection.commit()
-    # Fecha o cursor após a execução do comando
+    cur.close()
+
+def adicionar_emprestimo(codigo, data_do_emprestimo, data_da_devolucao,
+                         quantidade_de_livros,
+                         fk_usuario_cpf, fk_usuario_rg):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO emprestimo
+        (Codigo, Data_do_Emprestimo, Data_da_Devolucao, Quantidade_de_Livros,
+         FK_Usuario_CPF, FK_Usuario_RG)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+
+        codigo,
+        data_do_emprestimo,
+        data_da_devolucao,
+        quantidade_de_livros,
+        fk_usuario_cpf,
+        fk_usuario_rg
+    ))
+    mysql.connection.commit()
     cur.close()
