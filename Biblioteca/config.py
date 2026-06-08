@@ -1,7 +1,17 @@
+import os
+
 class Config:
-    MYSQL_HOST = "127.0.0.1"
-    MYSQL_PORT = 3307
-    MYSQL_USER = "root"
-    MYSQL_PASSWORD = ""
-    MYSQL_DB = "biblioteca"
-    MYSQL_CURSORCLASS = "DictCursor"
+    if os.name == "posix":  # Linux/macOS
+        MYSQL_HOST = "127.0.0.1"
+        MYSQL_PORT = 3306
+        MYSQL_USER = "root"
+        MYSQL_PASSWORD = ""
+        MYSQL_DB = "clinica"
+        MYSQL_CURSORCLASS = "DictCursor"
+    else:  # Windows
+        MYSQL_HOST = "127.0.0.1"
+        MYSQL_PORT = 3307
+        MYSQL_USER = "root"
+        MYSQL_PASSWORD = ""
+        MYSQL_DB = "clinica"
+        MYSQL_CURSORCLASS = "DictCursor"
