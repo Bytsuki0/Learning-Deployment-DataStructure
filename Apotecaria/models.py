@@ -17,11 +17,9 @@ def get_all_pacientes():
 
 def adicionar_paciente(codigo, nome, idade, cargo, historico, data_nasc):
     cur = mysql.connection.cursor()
-    cur.execute("""
-        INSERT INTO Pacientes
-            (Codigo_Paciente, Nome, Idade, Cargo, Historico_medico, Data_nascimento)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (codigo, nome, idade, cargo, historico, data_nasc))
+    # Chama a função criada no banco de dados passando os parâmetros
+    cur.execute("SELECT fn_adicionar_paciente(%s, %s, %s, %s, %s, %s)", 
+                (codigo, nome, idade, cargo, historico, data_nasc))
     mysql.connection.commit()
     cur.close()
 
@@ -37,14 +35,11 @@ def get_all_profissionais():
 
 def adicionar_profissional(codigo, nome, funcao, especialidade):
     cur = mysql.connection.cursor()
-    cur.execute("""
-        INSERT INTO Profissionais_enfermaria
-            (Codigo_profissional, Nome, Funcao, Especialidade)
-        VALUES (%s, %s, %s, %s)
-    """, (codigo, nome, funcao, especialidade))
+    # Chama a função criada no banco de dados passando os parâmetros
+    cur.execute("SELECT fn_adicionar_profissional(%s, %s, %s, %s)", 
+                (codigo, nome, funcao, especialidade))
     mysql.connection.commit()
     cur.close()
-
 # ─────────────────────────────────────────
 # ATENDIMENTO
 # ─────────────────────────────────────────
@@ -200,30 +195,10 @@ def get_atendimentos_com_diagnostico():
 def get_pacientes_com_tratamento():
     """
     LEFT JOIN: todos os pacientes, mesmo sem diagnóstico ou tratamento.
-    Liga Paciente → Diagnóstico → Resultado → Receita_Tratamentos.
+    Usa a Stored Procedure 'sp_get_pacientes_com_tratamento'.
     """
     cur = mysql.connection.cursor(DictCursor)
-    cur.execute("""
-        SELECT
-            p.Codigo_Paciente,
-            p.Nome          AS Paciente_Nome,
-            p.Idade,
-            p.Cargo,
-            d.Suspeita_identificada,
-            d.Data_avaliacao,
-            rt.Nome_tratamento,
-            rt.Dosagem,
-            rt.Status       AS Status_Tratamento,
-            rt.Duracao
-        FROM Pacientes p
-        LEFT JOIN Diagnostico d
-            ON d.idPacientes = p.Codigo_Paciente
-        LEFT JOIN Resultado r
-            ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
-        LEFT JOIN Receita_Tratamentos rt
-            ON rt.Codigo_tratamento = r.Codigo_tratamento
-        ORDER BY p.Codigo_Paciente
-    """)
+    cur.execute("CALL sp_get_pacientes_com_tratamento()")
     result = cur.fetchall()
     cur.close()
     return result
@@ -231,30 +206,13 @@ def get_pacientes_com_tratamento():
 def get_receitas_com_ingredientes():
     """
     INNER JOIN: receitas com seus ingredientes e quantidades.
-    Liga Receita_Tratamentos → Criacao → Ingredientes.
+    Usa a Stored Procedure 'sp_get_receitas_com_ingredientes'.
     """
     cur = mysql.connection.cursor(DictCursor)
-    cur.execute("""
-        SELECT
-            rt.Codigo_receita,
-            rt.Nome_formula,
-            rt.Dosagem,
-            rt.Data_prescricao,
-            i.Nome          AS Ingrediente_Nome,
-            i.Tipo,
-            i.Nivel_toxicidade,
-            c.Quantidade_ingrediente
-        FROM Receita_Tratamentos rt
-        INNER JOIN Criacao c
-            ON c.Codigo_receita = rt.Codigo_receita
-        INNER JOIN Ingredientes i
-            ON i.Codigo_ingrediente = c.Codigo_ingrediente
-        ORDER BY rt.Codigo_receita, i.Nome
-    """)
+    cur.execute("CALL sp_get_receitas_com_ingredientes()")
     result = cur.fetchall()
     cur.close()
     return result
-
 
 # ─────────────────────────────────────────
 # CONSULTAS AVANÇADAS (GROUP BY / ORDER BY / HAVING / LIKE)
@@ -588,3 +546,22 @@ def deletar_ingrediente(codigo):
     cur.execute("DELETE FROM Ingredientes WHERE Codigo_ingrediente = %s", (codigo,))
     mysql.connection.commit()
     cur.close()
+    
+
+def get_estatisticas():
+    """
+    Busca a linha de métricas e totais da tabela Estatisticas.
+    """
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Estatisticas WHERE id = 1")
+    result = cur.fetchone()
+    cur.close()
+    
+    # Caso a tabela esteja vazia por algum motivo, retorna valores zerados padrão
+    if not result:
+        return {
+            'numero_pacientes': 0, 
+            'numero_profissionais': 0, 
+            'numero_pacientes_atendimento': 0
+        }
+    return result

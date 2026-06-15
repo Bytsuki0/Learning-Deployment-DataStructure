@@ -10,7 +10,7 @@
                 <div class="stat-icon teal"><i class="bi bi-person-heart"></i></div>
                 <div>
                     <div class="stat-label">Pacientes</div>
-                    <div class="stat-value" style="color:var(--teal)">Cadastros</div>
+                    <div class="stat-value" style="color:var(--teal)">{{ stats['numero_pacientes'] }}</div>
                 </div>
             </div>
         </a>
@@ -21,7 +21,7 @@
                 <div class="stat-icon blue"><i class="bi bi-person-badge"></i></div>
                 <div>
                     <div class="stat-label">Profissionais</div>
-                    <div class="stat-value" style="color:#1d4ed8">Enfermaria</div>
+                    <div class="stat-value" style="color:#1d4ed8">{{ stats['numero_profissionais'] }}</div>
                 </div>
             </div>
         </a>
@@ -32,7 +32,7 @@
                 <div class="stat-icon amber"><i class="bi bi-calendar2-check"></i></div>
                 <div>
                     <div class="stat-label">Atendimentos</div>
-                    <div class="stat-value" style="color:#b45309">Agendados</div>
+                    <div class="stat-value" style="color:#b45309">{{ stats['numero_pacientes_atendimento'] }}</div>
                 </div>
             </div>
         </a>
@@ -73,7 +73,6 @@
 </div>
 
 <div class="row g-4">
-    <!-- Ações rápidas -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
@@ -103,7 +102,6 @@
         </div>
     </div>
 
-    <!-- Consultas SQL -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">

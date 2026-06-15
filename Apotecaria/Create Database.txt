@@ -120,3 +120,141 @@ CREATE TABLE Criacao (
     FOREIGN KEY (Codigo_receita)     REFERENCES Receita_Tratamentos(Codigo_receita),
     FOREIGN KEY (Codigo_ingrediente) REFERENCES Ingredientes(Codigo_ingrediente)
 );
+
+-- =====================
+-- TABELA ESTATISTICAS (Dashboard / Métricas)
+-- =====================
+CREATE TABLE Estatisticas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_pacientes INT DEFAULT 0,
+    numero_profissionais INT DEFAULT 0,
+    numero_pacientes_atendimento INT DEFAULT 0
+);
+
+
+DELIMITER $$
+
+CREATE FUNCTION IF NOT EXISTS fn_adicionar_paciente(
+    p_codigo INT,
+    p_nome VARCHAR(100),
+    p_idade INT,
+    p_cargo VARCHAR(50),
+    p_historico TEXT,
+    p_data_nasc DATE
+) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    INSERT INTO Pacientes (Codigo_Paciente, Nome, Idade, Cargo, Historico_medico, Data_nascimento)
+    VALUES (p_codigo, p_nome, p_idade, p_cargo, p_historico, p_data_nasc);
+    RETURN 1; -- Retorna 1 indicando sucesso
+END$$
+
+CREATE FUNCTION IF NOT EXISTS fn_adicionar_profissional(
+    p_codigo INT,
+    p_nome VARCHAR(100),
+    p_funcao VARCHAR(50),
+    p_especialidade VARCHAR(100)
+) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    INSERT INTO Profissionais_enfermaria (Codigo_profissional, Nome, Funcao, Especialidade)
+    VALUES (p_codigo, p_nome, p_funcao, p_especialidade);
+    RETURN 1; -- Retorna 1 indicando sucesso
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE IF NOT EXISTS sp_get_receitas_com_ingredientes()
+BEGIN
+    SELECT
+        rt.Codigo_receita,
+        rt.Nome_formula,
+        rt.Dosagem,
+        rt.Data_prescricao,
+        i.Nome          AS Ingrediente_Nome,
+        i.Tipo,
+        i.Nivel_toxicidade,
+        c.Quantidade_ingrediente
+    FROM Receita_Tratamentos rt
+    INNER JOIN Criacao c
+        ON c.Codigo_receita = rt.Codigo_receita
+    INNER JOIN Ingredientes i
+        ON i.Codigo_ingrediente = c.Codigo_ingrediente
+    ORDER BY rt.Codigo_receita, i.Nome;
+END$$
+
+CREATE PROCEDURE IF NOT EXISTS sp_get_pacientes_com_tratamento()
+BEGIN
+    SELECT
+        p.Codigo_Paciente,
+        p.Nome          AS Paciente_Nome,
+        p.Idade,
+        p.Cargo,
+        d.Suspeita_identificada,
+        d.Data_avaliacao,
+        rt.Nome_tratamento,
+        rt.Dosagem,
+        rt.Status       AS Status_Tratamento,
+        rt.Duracao
+    FROM Pacientes p
+    LEFT JOIN Diagnostico d
+        ON d.idPacientes = p.Codigo_Paciente
+    LEFT JOIN Resultado r
+        ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
+    LEFT JOIN Receita_Tratamentos rt
+        ON rt.Codigo_tratamento = r.Codigo_tratamento
+    ORDER BY p.Codigo_Paciente;
+END$$
+
+DELIMITER ;
+
+
+INSERT INTO Estatisticas (id, numero_pacientes, numero_profissionais, numero_pacientes_atendimento) 
+VALUES (1, 0, 0, 0)
+ON DUPLICATE KEY UPDATE id=id;
+
+-- ==========================================
+-- TRIGGER 1: Quando um Paciente é adicionado
+-- ==========================================
+DELIMITER $$
+CREATE TRIGGER trg_after_insert_paciente
+AFTER INSERT ON Pacientes
+FOR EACH ROW
+BEGIN
+    UPDATE Estatisticas 
+    SET numero_pacientes = numero_pacientes + 1 
+    WHERE id = 1;
+END$$
+DELIMITER ;
+
+-- ==========================================
+-- TRIGGER 2: Quando um Profissional é adicionado
+-- ==========================================
+DELIMITER $$
+CREATE TRIGGER trg_after_insert_profissional
+AFTER INSERT ON Profissionais_enfermaria
+FOR EACH ROW
+BEGIN
+    UPDATE Estatisticas 
+    SET numero_profissionais = numero_profissionais + 1 
+    WHERE id = 1;
+END$$
+DELIMITER ;
+
+-- ==========================================
+-- TRIGGER 3: Quando um Atendimento é adicionado
+-- ==========================================
+DELIMITER $$
+CREATE TRIGGER trg_after_insert_atendimento
+AFTER INSERT ON Atendimento
+FOR EACH ROW
+BEGIN
+    UPDATE Estatisticas 
+    SET numero_pacientes_atendimento = numero_pacientes_atendimento + 1 
+    WHERE id = 1;
+END$$
+DELIMITER ;

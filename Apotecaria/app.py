@@ -23,7 +23,8 @@ from models import (
     get_paciente_by_id, atualizar_paciente, deletar_paciente,
     get_profissional_by_id, atualizar_profissional, deletar_profissional,
     get_receita_by_id, atualizar_receita, deletar_receita,
-    get_ingrediente_by_id, atualizar_ingrediente, deletar_ingrediente
+    get_ingrediente_by_id, atualizar_ingrediente, deletar_ingrediente,
+    get_estatisticas
 )
 
 app = Flask(__name__)
@@ -35,7 +36,10 @@ mysql.init_app(app)
 # ───────────── INDEX ─────────────
 @app.route('/')
 def index():
-    return render_template('index.html')
+    stats = get_estatisticas()
+    return render_template('index.html', stats=stats)
+
+
 
 
 # ───────────── PACIENTES ─────────────
