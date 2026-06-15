@@ -5,9 +5,7 @@
 {% block content %}
 <div class="alert alert-success mb-4">
     <i class="bi bi-info-circle me-2"></i>
-    Esta seção reúne consultas SQL que demonstram o uso de <strong>GROUP BY</strong>,
-    <strong>ORDER BY</strong>, <strong>HAVING</strong> e <strong>LIKE</strong> sobre as
-    tabelas da clínica.
+    Seção dedicada a consultas SQL avançadas.
 </div>
 
 <div class="row g-4">
@@ -17,16 +15,14 @@
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-bar-chart"></i>
-                <strong>GROUP BY</strong>
+                <strong>Agrupamento</strong>
             </div>
             <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
                 <a href="{{ url_for('consulta_group_status') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-calendar2-check text-muted me-2"></i>Atendimentos por Status</span>
-                    <span class="query-badge group">GROUP BY</span>
                 </a>
                 <a href="{{ url_for('consulta_group_pacientes_cargo') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-people text-muted me-2"></i>Pacientes por Cargo</span>
-                    <span class="query-badge group">GROUP BY</span>
                 </a>
             </div>
         </div>
@@ -37,16 +33,14 @@
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-sort-down"></i>
-                <strong>ORDER BY</strong>
+                <strong>Ordenação</strong>
             </div>
             <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
                 <a href="{{ url_for('consulta_order_pacientes_idade') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-person-heart text-muted me-2"></i>Pacientes Ordenados por Idade</span>
-                    <span class="query-badge order">ORDER BY</span>
                 </a>
                 <a href="{{ url_for('consulta_order_atendimentos_data') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-calendar2-week text-muted me-2"></i>Atendimentos Ordenados por Data</span>
-                    <span class="query-badge order">ORDER BY</span>
                 </a>
             </div>
         </div>
@@ -57,16 +51,14 @@
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-funnel"></i>
-                <strong>HAVING</strong>
+                <strong>Itens contidos</strong>
             </div>
             <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
                 <a href="{{ url_for('consulta_having_profissionais') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-person-badge text-muted me-2"></i>Profissionais com 2+ Atendimentos</span>
-                    <span class="query-badge having">HAVING</span>
                 </a>
                 <a href="{{ url_for('consulta_having_ingredientes') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-eyedropper text-muted me-2"></i>Ingredientes Usados em 2+ Receitas</span>
-                    <span class="query-badge having">HAVING</span>
                 </a>
             </div>
         </div>
@@ -77,16 +69,14 @@
         <div class="card">
             <div class="card-header">
                 <i class="bi bi-search"></i>
-                <strong>LIKE (%)</strong>
+                <strong>Pesquisa Avançado</strong>
             </div>
             <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
                 <a href="{{ url_for('consulta_like_pacientes') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-person-heart text-muted me-2"></i>Buscar Pacientes por Nome</span>
-                    <span class="query-badge like">LIKE %</span>
                 </a>
                 <a href="{{ url_for('consulta_like_diagnosticos') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-clipboard2-pulse text-muted me-2"></i>Buscar Diagnósticos por Suspeita</span>
-                    <span class="query-badge like">LIKE %</span>
                 </a>
             </div>
         </div>

@@ -1,9 +1,7 @@
 CREATE DATABASE IF NOT EXISTS clinica;
 USE clinica;
 
--- =====================
--- TABELA PACIENTES
--- =====================
+
 CREATE TABLE Pacientes (
     Codigo_Paciente INT PRIMARY KEY,
     Nome VARCHAR(100),
@@ -13,9 +11,7 @@ CREATE TABLE Pacientes (
     Data_nascimento DATE
 );
 
--- =====================
--- PROFISSIONAIS
--- =====================
+
 CREATE TABLE Profissionais_enfermaria (
     Codigo_profissional INT PRIMARY KEY,
     Nome VARCHAR(100),
@@ -23,9 +19,7 @@ CREATE TABLE Profissionais_enfermaria (
     Especialidade VARCHAR(100)
 );
 
--- =====================
--- ATENDIMENTO
--- =====================
+
 CREATE TABLE Atendimento (
     Codigo_atendimento INT PRIMARY KEY,
     Codigo_profissional INT,
@@ -37,9 +31,7 @@ CREATE TABLE Atendimento (
     FOREIGN KEY (Codigo_Paciente) REFERENCES Pacientes(Codigo_Paciente)
 );
 
--- =====================
--- DIAGNOSTICO
--- =====================
+
 CREATE TABLE Diagnostico (
     Codigo_Diagnostico INT PRIMARY KEY,
     idPacientes INT,
@@ -51,9 +43,7 @@ CREATE TABLE Diagnostico (
     FOREIGN KEY (idProfissionais_enfermaria) REFERENCES Profissionais_enfermaria(Codigo_profissional)
 );
 
--- =====================
--- RECEITA / TRATAMENTO
--- =====================
+
 -- Codigo_receita and Codigo_tratamento are kept as separate, independently
 -- identifiable columns. A composite PK allows both to be part of the key
 -- while also letting Resultado and Cria reference each column individually
@@ -74,9 +64,6 @@ CREATE TABLE Receita_Tratamentos (
     UNIQUE KEY uq_tratamento  (Codigo_tratamento)
 );
 
--- =====================
--- RESULTADO
--- =====================
 CREATE TABLE Resultado (
     Codigo_tratamento INT,
     Codigo_Diagnostico INT,
@@ -86,9 +73,6 @@ CREATE TABLE Resultado (
     FOREIGN KEY (Codigo_Diagnostico) REFERENCES Diagnostico(Codigo_Diagnostico)
 );
 
--- =====================
--- RELAÇÃO CRIA (Profissional cria Receita)
--- =====================
 CREATE TABLE Cria (
     Codigo_receita INT,
     Codigo_profissional INT,
@@ -97,9 +81,7 @@ CREATE TABLE Cria (
     FOREIGN KEY (Codigo_profissional) REFERENCES Profissionais_enfermaria(Codigo_profissional)
 );
 
--- =====================
--- INGREDIENTES
--- =====================
+
 CREATE TABLE Ingredientes (
     Codigo_ingrediente INT PRIMARY KEY,
     Nome VARCHAR(100),
@@ -109,9 +91,7 @@ CREATE TABLE Ingredientes (
     Nivel_toxicidade VARCHAR(50)
 );
 
--- =====================
--- RELAÇÃO CRIACAO (Receita x Ingrediente)
--- =====================
+
 CREATE TABLE Criacao (
     Codigo_receita INT,
     Codigo_ingrediente INT,
@@ -121,9 +101,7 @@ CREATE TABLE Criacao (
     FOREIGN KEY (Codigo_ingrediente) REFERENCES Ingredientes(Codigo_ingrediente)
 );
 
--- =====================
--- TABELA ESTATISTICAS (Dashboard / Métricas)
--- =====================
+
 CREATE TABLE Estatisticas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     numero_pacientes INT DEFAULT 0,
@@ -217,9 +195,7 @@ INSERT INTO Estatisticas (id, numero_pacientes, numero_profissionais, numero_pac
 VALUES (1, 0, 0, 0)
 ON DUPLICATE KEY UPDATE id=id;
 
--- ==========================================
--- TRIGGER 1: Quando um Paciente é adicionado
--- ==========================================
+
 DELIMITER $$
 CREATE TRIGGER trg_after_insert_paciente
 AFTER INSERT ON Pacientes
@@ -231,9 +207,6 @@ BEGIN
 END$$
 DELIMITER ;
 
--- ==========================================
--- TRIGGER 2: Quando um Profissional é adicionado
--- ==========================================
 DELIMITER $$
 CREATE TRIGGER trg_after_insert_profissional
 AFTER INSERT ON Profissionais_enfermaria
@@ -245,9 +218,7 @@ BEGIN
 END$$
 DELIMITER ;
 
--- ==========================================
--- TRIGGER 3: Quando um Atendimento é adicionado
--- ==========================================
+
 DELIMITER $$
 CREATE TRIGGER trg_after_insert_atendimento
 AFTER INSERT ON Atendimento
