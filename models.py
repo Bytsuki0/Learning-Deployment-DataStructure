@@ -64,3 +64,5 @@ def adicionar_emprestimo(codigo, data_do_emprestimo, data_da_devolucao,
     ))
     mysql.connection.commit()
     cur.close()
+
+    

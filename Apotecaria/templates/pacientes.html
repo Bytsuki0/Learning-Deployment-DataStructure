@@ -23,6 +23,7 @@
                     <th>Cargo</th>
                     <th>Data de Nascimento</th>
                     <th>Histórico Médico</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,9 +37,19 @@
                     <td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                         {{ p['Historico_medico'] or '—' }}
                     </td>
+                    <td>
+                        <a href="{{ url_for('editar_paciente', codigo=p['Codigo_Paciente']) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ url_for('route_deletar_paciente', codigo=p['Codigo_Paciente']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar este paciente?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Deletar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-person-x"></i>Nenhum paciente cadastrado.</div></td></tr>
+                <tr><td colspan="7"><div class="empty-state"><i class="bi bi-person-x"></i>Nenhum paciente cadastrado.</div></td></tr>
                 {% endfor %}
             </tbody>
         </table>

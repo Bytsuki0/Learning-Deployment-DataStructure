@@ -25,6 +25,7 @@
                     <th>Duração</th>
                     <th>Data Prescrição</th>
                     <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,9 +47,19 @@
                             <span class="badge-base badge-warn">{{ r['Status'] }}</span>
                         {% endif %}
                     </td>
+                    <td>
+                        <a href="{{ url_for('editar_receita', codigo=r['Codigo_receita']) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ url_for('route_deletar_receita', codigo=r['Codigo_receita']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta receita?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Deletar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="8"><div class="empty-state"><i class="bi bi-capsule"></i>Nenhuma receita cadastrada.</div></td></tr>
+                <tr><td colspan="9"><div class="empty-state"><i class="bi bi-capsule"></i>Nenhuma receita cadastrada.</div></td></tr>
                 {% endfor %}
             </tbody>
         </table>

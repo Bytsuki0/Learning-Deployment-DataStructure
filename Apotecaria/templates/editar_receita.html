@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Editar Receita / Tratamento{% endblock %}
+{% block page_title %}Editar Receita e Tratamento{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Editar Dados da Receita / Tratamento</strong>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('editar_receita', codigo=receita['Codigo_receita']) }}" method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Código da Receita (Somente Leitura)</label>
+                    <input type="number" class="form-control bg-light" name="codigo_receita" value="{{ receita['Codigo_receita'] }}" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Código do Tratamento</label>
+                    <input type="number" class="form-control" name="codigo_tratamento" value="{{ receita['Codigo_tratamento'] }}" required>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nome da Fórmula</label>
+                    <input type="text" class="form-control" name="nome_formula" value="{{ receita['Nome_formula'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nome do Tratamento</label>
+                    <input type="text" class="form-control" name="nome_tratamento" value="{{ receita['Nome_tratamento'] }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Dosagem</label>
+                    <input type="text" class="form-control" name="dosagem" value="{{ receita['Dosagem'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Duração</label>
+                    <input type="text" class="form-control" name="duracao" value="{{ receita['Duracao'] }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Data de Prescrição</label>
+                    <input type="date" class="form-control" name="data_prescricao" value="{{ receita['Data_prescricao'] }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" required>
+                        <option value="Ativo" {% if receita['Status'] == 'Ativo' %}selected{% endif %}>Ativo</option>
+                        <option value="Concluído" {% if receita['Status'] == 'Concluído' %}selected{% endif %}>Concluído</option>
+                        <option value="Cancelado" {% if receita['Status'] == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                        <option value="Pendente" {% if receita['Status'] == 'Pendente' %}selected{% endif %}>Pendente</option>
+                    </select>
+                </div>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('receitas') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-save me-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

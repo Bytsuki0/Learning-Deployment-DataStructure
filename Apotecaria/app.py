@@ -20,6 +20,10 @@ from models import (
     get_ingredientes_mais_usados,
     buscar_pacientes_por_nome,
     buscar_diagnosticos_por_suspeita,
+    get_paciente_by_id, atualizar_paciente, deletar_paciente,
+    get_profissional_by_id, atualizar_profissional, deletar_profissional,
+    get_receita_by_id, atualizar_receita, deletar_receita,
+    get_ingrediente_by_id, atualizar_ingrediente, deletar_ingrediente
 )
 
 app = Flask(__name__)
@@ -347,6 +351,135 @@ def consulta_like_diagnosticos():
                            tipo='like',
                            dados=dados,
                            termo=termo)
+
+# --- ROTAS DE EDIÇÃO E EXCLUSÃO ---
+
+# Pacientes
+@app.route('/editar_paciente/<codigo>', methods=['GET', 'POST'])
+def editar_paciente(codigo):
+    paciente = get_paciente_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_paciente(
+                codigo,
+                request.form['nome'],
+                request.form['idade'],
+                request.form['cargo'],
+                request.form['historico'],
+                request.form['data_nascimento']
+            )
+            flash('Paciente atualizado com sucesso!', 'success')
+            return redirect(url_for('pacientes'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar paciente: {e}', 'danger')
+    return render_template('editar_paciente.html', paciente=paciente)
+
+@app.route('/deletar_paciente/<codigo>', methods=['POST'])
+def route_deletar_paciente(codigo):
+    try:
+        deletar_paciente(codigo)
+        flash('Paciente deletado com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar paciente: {e}', 'danger')
+    return redirect(url_for('pacientes'))
+
+
+# Profissionais
+@app.route('/editar_profissional/<codigo>', methods=['GET', 'POST'])
+def editar_profissional(codigo):
+    profissional = get_profissional_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_profissional(
+                codigo,
+                request.form['nome'],
+                request.form['funcao'],
+                request.form['especialidade']
+            )
+            flash('Profissional atualizado com sucesso!', 'success')
+            return redirect(url_for('profissionais'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar profissional: {e}', 'danger')
+    return render_template('editar_profissional.html', profissional=profissional)
+
+@app.route('/deletar_profissional/<codigo>', methods=['POST'])
+def route_deletar_profissional(codigo):
+    try:
+        deletar_profissional(codigo)
+        flash('Profissional deletado com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar profissional: {e}', 'danger')
+    return redirect(url_for('profissionais'))
+
+
+# Receitas
+@app.route('/editar_receita/<codigo>', methods=['GET', 'POST'])
+def editar_receita(codigo):
+    receita = get_receita_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_receita(
+                codigo,
+                request.form['codigo_tratamento'],
+                request.form['dosagem'],
+                request.form['nome_formula'],
+                request.form['data_prescricao'],
+                request.form['duracao'],
+                request.form['status'],
+                request.form['nome_tratamento']
+            )
+            flash('Receita atualizada com sucesso!', 'success')
+            return redirect(url_for('receitas'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar receita: {e}', 'danger')
+    return render_template('editar_receita.html', receita=receita)
+
+@app.route('/deletar_receita/<codigo>', methods=['POST'])
+def route_deletar_receita(codigo):
+    try:
+        deletar_receita(codigo)
+        flash('Receita deletada com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar receita: {e}', 'danger')
+    return redirect(url_for('receitas'))
+
+
+# Ingredientes
+@app.route('/editar_ingrediente/<codigo>', methods=['GET', 'POST'])
+def editar_ingrediente(codigo):
+    ingrediente = get_ingrediente_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_ingrediente(
+                codigo,
+                request.form['nome'],
+                request.form['tipo'],
+                request.form['quantidade'],
+                request.form['origem'],
+                request.form['toxicidade']
+            )
+            flash('Ingrediente atualizado com sucesso!', 'success')
+            return redirect(url_for('ingredientes'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar ingrediente: {e}', 'danger')
+    return render_template('editar_ingrediente.html', ingrediente=ingrediente)
+
+@app.route('/deletar_ingrediente/<codigo>', methods=['POST'])
+def route_deletar_ingrediente(codigo):
+    try:
+        deletar_ingrediente(codigo)
+        flash('Ingrediente deletado com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar ingrediente: {e}', 'danger')
+    return redirect(url_for('ingredientes'))
 
 
 if __name__ == '__main__':

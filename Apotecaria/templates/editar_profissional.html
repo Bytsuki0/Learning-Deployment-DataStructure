@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Editar Profissional{% endblock %}
+{% block page_title %}Editar Profissional{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Editar Dados do Profissional</strong>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('editar_profissional', codigo=profissional['Codigo_profissional']) }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Código do Profissional (Somente Leitura)</label>
+                <input type="number" class="form-control bg-light" name="codigo" value="{{ profissional['Codigo_profissional'] }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" class="form-control" name="nome" value="{{ profissional['Nome'] }}" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Função</label>
+                    <input type="text" class="form-control" name="funcao" value="{{ profissional['Funcao'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Especialidade</label>
+                    <input type="text" class="form-control" name="especialidade" value="{{ profissional['Especialidade'] }}">
+                </div>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('profissionais') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-save me-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

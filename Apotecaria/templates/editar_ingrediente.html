@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Editar Ingrediente{% endblock %}
+{% block page_title %}Editar Ingrediente{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Editar Dados do Ingrediente</strong>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('editar_ingrediente', codigo=ingrediente['Codigo_ingrediente']) }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Código do Ingrediente (Somente Leitura)</label>
+                <input type="number" class="form-control bg-light" name="codigo" value="{{ ingrediente['Codigo_ingrediente'] }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nome do Ingrediente</label>
+                <input type="text" class="form-control" name="nome" value="{{ ingrediente['Nome'] }}" required>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tipo</label>
+                    <input type="text" class="form-control" name="tipo" value="{{ ingrediente['Tipo'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Quantidade Disponível</label>
+                    <input type="number" step="0.01" class="form-control" name="quantidade" value="{{ ingrediente['Quantidade_disponivel'] }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Origem</label>
+                    <input type="text" class="form-control" name="origem" value="{{ ingrediente['Origem'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nível de Toxicidade</label>
+                    <select class="form-select" name="toxicidade">
+                        <option value="">Selecione...</option>
+                        <option value="Nenhum" {% if ingrediente['Nivel_toxicidade'] == 'Nenhum' %}selected{% endif %}>Nenhum</option>
+                        <option value="Baixo" {% if ingrediente['Nivel_toxicidade'] == 'Baixo' %}selected{% endif %}>Baixo</option>
+                        <option value="Médio" {% if ingrediente['Nivel_toxicidade'] == 'Médio' %}selected{% endif %}>Médio</option>
+                        <option value="Alto" {% if ingrediente['Nivel_toxicidade'] == 'Alto' %}selected{% endif %}>Alto</option>
+                        <option value="Crítico" {% if ingrediente['Nivel_toxicidade'] == 'Crítico' %}selected{% endif %}>Crítico</option>
+                    </select>
+                </div>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('ingredientes') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-save me-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

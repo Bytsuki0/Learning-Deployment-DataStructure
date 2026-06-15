@@ -21,6 +21,7 @@
                     <th>Nome</th>
                     <th>Função</th>
                     <th>Especialidade</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,9 +31,19 @@
                     <td><strong>{{ pr['Nome'] }}</strong></td>
                     <td>{{ pr['Funcao'] or '—' }}</td>
                     <td>{{ pr['Especialidade'] or '—' }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_profissional', codigo=pr['Codigo_profissional']) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ url_for('route_deletar_profissional', codigo=pr['Codigo_profissional']) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja deletar este profissional?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Deletar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="4"><div class="empty-state"><i class="bi bi-person-x"></i>Nenhum profissional cadastrado.</div></td></tr>
+                <tr><td colspan="5"><div class="empty-state"><i class="bi bi-person-x"></i>Nenhum profissional cadastrado.</div></td></tr>
                 {% endfor %}
             </tbody>
         </table>

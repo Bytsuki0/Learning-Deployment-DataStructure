@@ -482,3 +482,109 @@ def get_view_resumo_clinica():
     result = cur.fetchall()
     cur.close()
     return result
+
+
+
+# ─────────────────────────────────────────
+# FUNÇÕES DE ATUALIZAÇÃO E EXCLUSÃO (CRUD)
+# ─────────────────────────────────────────
+
+# ---- PACIENTES ----
+def get_paciente_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Pacientes WHERE Codigo_Paciente = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_paciente(codigo, nome, idade, cargo, historico, data_nasc):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Pacientes
+        SET Nome = %s, Idade = %s, Cargo = %s, Historico_medico = %s, Data_nascimento = %s
+        WHERE Codigo_Paciente = %s
+    """, (nome, idade, cargo, historico, data_nasc, codigo))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_paciente(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Pacientes WHERE Codigo_Paciente = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ---- PROFISSIONAIS ----
+def get_profissional_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Profissionais_enfermaria WHERE Codigo_profissional = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_profissional(codigo, nome, funcao, especialidade):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Profissionais_enfermaria
+        SET Nome = %s, Funcao = %s, Especialidade = %s
+        WHERE Codigo_profissional = %s
+    """, (nome, funcao, especialidade, codigo))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_profissional(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Profissionais_enfermaria WHERE Codigo_profissional = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ---- RECEITAS / TRATAMENTOS ----
+def get_receita_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Receita_Tratamentos WHERE Codigo_receita = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_receita(cod_rec, cod_trat, dosagem, nome_formula, data_presc, duracao, status, nome_trat):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Receita_Tratamentos
+        SET Codigo_tratamento = %s, Dosagem = %s, Nome_formula = %s,
+            Data_prescricao = %s, Duracao = %s, Status = %s, Nome_tratamento = %s
+        WHERE Codigo_receita = %s
+    """, (cod_trat, dosagem, nome_formula, data_presc, duracao, status, nome_trat, cod_rec))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_receita(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Receita_Tratamentos WHERE Codigo_receita = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ---- INGREDIENTES ----
+def get_ingrediente_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Ingredientes WHERE Codigo_ingrediente = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_ingrediente(codigo, nome, tipo, qtd, origem, toxicidade):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Ingredientes
+        SET Nome = %s, Tipo = %s, Quantidade_disponivel = %s, Origem = %s, Nivel_toxicidade = %s
+        WHERE Codigo_ingrediente = %s
+    """, (nome, tipo, qtd, origem, toxicidade, codigo))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_ingrediente(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Ingredientes WHERE Codigo_ingrediente = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
