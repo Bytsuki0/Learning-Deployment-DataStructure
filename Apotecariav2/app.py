@@ -12,14 +12,6 @@ from models import (
     get_pacientes_com_tratamento,
     get_receitas_com_ingredientes,
     get_view_resumo_clinica,
-    get_atendimentos_por_status,
-    get_pacientes_por_cargo,
-    get_pacientes_ordenados_idade,
-    get_atendimentos_ordenados_data,
-    get_profissionais_com_mais_atendimentos,
-    get_ingredientes_mais_usados,
-    buscar_pacientes_por_nome,
-    buscar_diagnosticos_por_suspeita,
 )
 
 app = Flask(__name__)
@@ -248,105 +240,6 @@ def consulta_view_resumo():
                                      'paciente, profissional, atendimento, diagnóstico e tratamento em uma única consulta.',
                            tipo='view',
                            dados=dados)
-
-
-
-# ───────────── CONSULTAS AVANÇADAS (GROUP BY / ORDER BY / HAVING / LIKE) ─────────────
-@app.route('/consultas_avancadas')
-def consultas_avancadas():
-    return render_template('consultas_avancadas.html')
-
-
-# ---- GROUP BY ----
-@app.route('/consulta/group_by/atendimentos_status')
-def consulta_group_status():
-    dados = get_atendimentos_por_status()
-    return render_template('consulta_avancada.html',
-                           titulo='Atendimentos por Status',
-                           descricao='Agrupa todos os atendimentos pelo campo Status e conta quantos '
-                                     'registros existem em cada grupo, usando GROUP BY + COUNT(*).',
-                           tipo='group',
-                           dados=dados)
-
-@app.route('/consulta/group_by/pacientes_cargo')
-def consulta_group_pacientes_cargo():
-    dados = get_pacientes_por_cargo()
-    return render_template('consulta_avancada.html',
-                           titulo='Pacientes por Cargo',
-                           descricao='Agrupa os pacientes pelo campo Cargo, contando o total de pacientes '
-                                     'e calculando a idade média de cada grupo (GROUP BY + COUNT + AVG).',
-                           tipo='group',
-                           dados=dados)
-
-
-# ---- ORDER BY ----
-@app.route('/consulta/order_by/pacientes_idade')
-def consulta_order_pacientes_idade():
-    dados = get_pacientes_ordenados_idade()
-    return render_template('consulta_avancada.html',
-                           titulo='Pacientes Ordenados por Idade',
-                           descricao='Lista todos os pacientes ordenados pela Idade, do mais velho '
-                                     'para o mais novo (ORDER BY Idade DESC).',
-                           tipo='order',
-                           dados=dados)
-
-@app.route('/consulta/order_by/atendimentos_data')
-def consulta_order_atendimentos_data():
-    dados = get_atendimentos_ordenados_data()
-    return render_template('consulta_avancada.html',
-                           titulo='Atendimentos Ordenados por Data',
-                           descricao='Lista os atendimentos ordenados por Data e Hora, do mais antigo '
-                                     'para o mais recente (ORDER BY Data ASC, Hora ASC).',
-                           tipo='order',
-                           dados=dados)
-
-
-# ---- HAVING ----
-@app.route('/consulta/having/profissionais_atendimentos')
-def consulta_having_profissionais():
-    dados = get_profissionais_com_mais_atendimentos(2)
-    return render_template('consulta_avancada.html',
-                           titulo='Profissionais com 2 ou mais Atendimentos',
-                           descricao='Agrupa os atendimentos por profissional e filtra, com HAVING, '
-                                     'apenas aqueles que possuem 2 ou mais atendimentos registrados.',
-                           tipo='having',
-                           dados=dados)
-
-@app.route('/consulta/having/ingredientes_usados')
-def consulta_having_ingredientes():
-    dados = get_ingredientes_mais_usados(2)
-    return render_template('consulta_avancada.html',
-                           titulo='Ingredientes Usados em 2 ou mais Receitas',
-                           descricao='Agrupa os ingredientes pela quantidade de receitas em que aparecem '
-                                     'e filtra, com HAVING, apenas os usados em 2 ou mais receitas.',
-                           tipo='having',
-                           dados=dados)
-
-
-# ---- LIKE ----
-@app.route('/consulta/like/pacientes')
-def consulta_like_pacientes():
-    termo = request.args.get('termo', '').strip()
-    dados = buscar_pacientes_por_nome(termo) if termo else []
-    return render_template('consulta_avancada.html',
-                           titulo='Buscar Pacientes por Nome',
-                           descricao='Pesquisa pacientes cujo Nome contenha o termo digitado, em '
-                                     'qualquer posição, usando LIKE com % nos dois lados.',
-                           tipo='like',
-                           dados=dados,
-                           termo=termo)
-
-@app.route('/consulta/like/diagnosticos')
-def consulta_like_diagnosticos():
-    termo = request.args.get('termo', '').strip()
-    dados = buscar_diagnosticos_por_suspeita(termo) if termo else []
-    return render_template('consulta_avancada.html',
-                           titulo='Buscar Diagnósticos por Suspeita',
-                           descricao='Pesquisa diagnósticos cuja Suspeita_identificada contenha o termo '
-                                     'digitado, em qualquer posição, usando LIKE com % nos dois lados.',
-                           tipo='like',
-                           dados=dados,
-                           termo=termo)
 
 
 if __name__ == '__main__':

@@ -186,10 +186,6 @@
         .query-badge.join  { background: #dcfce7; color: #15803d; }
         .query-badge.left  { background: #dbeafe; color: #1d4ed8; }
         .query-badge.view  { background: #f3e8ff; color: #7e22ce; }
-        .query-badge.group  { background: #fef3c7; color: #92400e; }
-        .query-badge.order  { background: #e0e7ff; color: #4338ca; }
-        .query-badge.having { background: #fee2e2; color: #b91c1c; }
-        .query-badge.like   { background: #ccfbf1; color: #0f766e; }
         /* ── Empty state ── */
         .empty-state {
             padding: 60px 20px; text-align: center; color: var(--muted);
@@ -252,37 +248,6 @@
         </a>
         <a href="{{ url_for('consulta_view_resumo') }}" class="{{ 'active' if request.endpoint == 'consulta_view_resumo' }}">
             <i class="bi bi-eye"></i> VIEW — Resumo Clínica
-        </a>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-label">Consultas Avançadas</div>
-        <a href="{{ url_for('consultas_avancadas') }}" class="{{ 'active' if request.endpoint == 'consultas_avancadas' }}">
-            <i class="bi bi-sliders"></i> Painel Avançado
-        </a>
-        <a href="{{ url_for('consulta_group_status') }}" class="{{ 'active' if request.endpoint == 'consulta_group_status' }}">
-            <i class="bi bi-bar-chart"></i> Atend. por Status
-        </a>
-        <a href="{{ url_for('consulta_group_pacientes_cargo') }}" class="{{ 'active' if request.endpoint == 'consulta_group_pacientes_cargo' }}">
-            <i class="bi bi-people"></i> Pac. por Cargo
-        </a>
-        <a href="{{ url_for('consulta_order_pacientes_idade') }}" class="{{ 'active' if request.endpoint == 'consulta_order_pacientes_idade' }}">
-            <i class="bi bi-sort-numeric-down"></i> Pac. por Idade
-        </a>
-        <a href="{{ url_for('consulta_order_atendimentos_data') }}" class="{{ 'active' if request.endpoint == 'consulta_order_atendimentos_data' }}">
-            <i class="bi bi-calendar2-week"></i> Atend. por Data
-        </a>
-        <a href="{{ url_for('consulta_having_profissionais') }}" class="{{ 'active' if request.endpoint == 'consulta_having_profissionais' }}">
-            <i class="bi bi-person-badge"></i> Prof. c/ 2+ Atend.
-        </a>
-        <a href="{{ url_for('consulta_having_ingredientes') }}" class="{{ 'active' if request.endpoint == 'consulta_having_ingredientes' }}">
-            <i class="bi bi-eyedropper"></i> Ingred. mais usados
-        </a>
-        <a href="{{ url_for('consulta_like_pacientes') }}" class="{{ 'active' if request.endpoint == 'consulta_like_pacientes' }}">
-            <i class="bi bi-search"></i> Buscar Pacientes
-        </a>
-        <a href="{{ url_for('consulta_like_diagnosticos') }}" class="{{ 'active' if request.endpoint == 'consulta_like_diagnosticos' }}">
-            <i class="bi bi-search-heart"></i> Buscar Diagnósticos
         </a>
     </div>
 </nav>

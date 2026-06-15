@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Receitas / Tratamentos{% endblock %}
+{% block page_title %}Receitas e Tratamentos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('cadastro_receita') }}" class="btn btn-teal">
+        <i class="bi bi-plus-lg me-1"></i> Nova Receita
+    </a>
+</div>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-capsule"></i>
+        <strong>Lista de Receitas e Tratamentos</strong>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cód. Receita</th>
+                    <th>Cód. Tratamento</th>
+                    <th>Nome Fórmula</th>
+                    <th>Nome Tratamento</th>
+                    <th>Dosagem</th>
+                    <th>Duração</th>
+                    <th>Data Prescrição</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in receitas %}
+                <tr>
+                    <td><span class="badge-base badge-teal">{{ r['Codigo_receita'] }}</span></td>
+                    <td><span class="badge-base badge-info">{{ r['Codigo_tratamento'] }}</span></td>
+                    <td><strong>{{ r['Nome_formula'] or '—' }}</strong></td>
+                    <td>{{ r['Nome_tratamento'] or '—' }}</td>
+                    <td>{{ r['Dosagem'] or '—' }}</td>
+                    <td>{{ r['Duracao'] or '—' }}</td>
+                    <td>{{ r['Data_prescricao'] }}</td>
+                    <td>
+                        {% if r['Status'] == 'Ativo' %}
+                            <span class="badge-base badge-teal">{{ r['Status'] }}</span>
+                        {% elif r['Status'] == 'Concluído' %}
+                            <span class="badge-base badge-info">{{ r['Status'] }}</span>
+                        {% else %}
+                            <span class="badge-base badge-warn">{{ r['Status'] }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8"><div class="empty-state"><i class="bi bi-capsule"></i>Nenhuma receita cadastrada.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

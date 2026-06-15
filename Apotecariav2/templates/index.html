@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Início{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('pacientes') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon teal"><i class="bi bi-person-heart"></i></div>
+                <div>
+                    <div class="stat-label">Pacientes</div>
+                    <div class="stat-value" style="color:var(--teal)">Cadastros</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('profissionais') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="bi bi-person-badge"></i></div>
+                <div>
+                    <div class="stat-label">Profissionais</div>
+                    <div class="stat-value" style="color:#1d4ed8">Enfermaria</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('atendimentos') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="bi bi-calendar2-check"></i></div>
+                <div>
+                    <div class="stat-label">Atendimentos</div>
+                    <div class="stat-value" style="color:#b45309">Agendados</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('diagnosticos') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon rose"><i class="bi bi-clipboard2-pulse"></i></div>
+                <div>
+                    <div class="stat-label">Diagnósticos</div>
+                    <div class="stat-value" style="color:#be123c">Registros</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('receitas') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon teal"><i class="bi bi-capsule"></i></div>
+                <div>
+                    <div class="stat-label">Receitas / Tratamentos</div>
+                    <div class="stat-value" style="color:var(--teal)">Prescrições</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-xl-4">
+        <a href="{{ url_for('ingredientes') }}" class="text-decoration-none">
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="bi bi-eyedropper"></i></div>
+                <div>
+                    <div class="stat-label">Ingredientes</div>
+                    <div class="stat-value" style="color:#7e22ce">Estoque</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Ações rápidas -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle"></i>
+                <strong>Cadastrar</strong>
+            </div>
+            <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
+                <a href="{{ url_for('cadastro_paciente') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-person-plus text-muted"></i> Novo Paciente
+                </a>
+                <a href="{{ url_for('cadastro_profissional') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-person-badge text-muted"></i> Novo Profissional
+                </a>
+                <a href="{{ url_for('cadastro_atendimento') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-calendar-plus text-muted"></i> Novo Atendimento
+                </a>
+                <a href="{{ url_for('cadastro_diagnostico') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-clipboard2-plus text-muted"></i> Novo Diagnóstico
+                </a>
+                <a href="{{ url_for('cadastro_receita') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-file-earmark-medical text-muted"></i> Nova Receita / Tratamento
+                </a>
+                <a href="{{ url_for('cadastro_ingrediente') }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-3">
+                    <i class="bi bi-plus-square text-muted"></i> Novo Ingrediente
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultas SQL -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-diagram-3"></i>
+                <strong>Consultas SQL</strong>
+            </div>
+            <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
+                <a href="{{ url_for('consulta_atendimentos_diagnostico') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
+                    <span><i class="bi bi-intersect text-muted me-2"></i>Atendimentos com Diagnóstico</span>
+                    <span class="query-badge join">INNER JOIN</span>
+                </a>
+                <a href="{{ url_for('consulta_pacientes_tratamento') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
+                    <span><i class="bi bi-union text-muted me-2"></i>Pacientes e Tratamentos</span>
+                    <span class="query-badge left">LEFT JOIN</span>
+                </a>
+                <a href="{{ url_for('consulta_receitas_ingredientes') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
+                    <span><i class="bi bi-intersect text-muted me-2"></i>Receitas e Ingredientes</span>
+                    <span class="query-badge join">INNER JOIN</span>
+                </a>
+                <a href="{{ url_for('consulta_view_resumo') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
+                    <span><i class="bi bi-eye text-muted me-2"></i>Visão Geral da Clínica</span>
+                    <span class="query-badge view">VIEW</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

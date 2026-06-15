@@ -1,0 +1,10 @@
+venv
+./Apotecaria/venv
+__pycache__
+./Apotecaria/__pycache__
+./Apotecaria/venv
+./Apotecaria/venv/
+./Apotecariav2/venv
+./Apotecariav2/venv/
+*.pyc
+*.venv
