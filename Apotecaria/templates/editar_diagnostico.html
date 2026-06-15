@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Editar Diagnóstico{% endblock %}
+{% block page_title %}Editar Diagnóstico{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Editar Dados do Diagnóstico</strong>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('editar_diagnostico', codigo=diagnostico['Codigo_Diagnostico']) }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Código do Diagnóstico (Somente Leitura)</label>
+                <input type="number" class="form-control bg-light" name="codigo" value="{{ diagnostico['Codigo_Diagnostico'] }}" readonly>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Paciente</label>
+                    <select class="form-select" name="id_paciente" required>
+                        <option value="">Selecione o Paciente...</option>
+                        {% for p in pacientes %}
+                            <option value="{{ p['Codigo_Paciente'] }}" {% if p['Codigo_Paciente'] == diagnostico['idPacientes'] %}selected{% endif %}>
+                                {{ p['Codigo_Paciente'] }} - {{ p['Nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Profissional Responsável</label>
+                    <select class="form-select" name="id_profissional" required>
+                        <option value="">Selecione o Profissional...</option>
+                        {% for pr in profissionais %}
+                            <option value="{{ pr['Codigo_profissional'] }}" {% if pr['Codigo_profissional'] == diagnostico['idProfissionais_enfermaria'] %}selected{% endif %}>
+                                {{ pr['Codigo_profissional'] }} - {{ pr['Nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Suspeita Identificada</label>
+                    <input type="text" class="form-control" name="suspeita" value="{{ diagnostico['Suspeita_identificada'] }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Data da Avaliação</label>
+                    <input type="date" class="form-control" name="data_avaliacao" value="{{ diagnostico['Data_avaliacao'] }}" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" name="descricao" rows="4">{{ diagnostico['Descricao'] }}</textarea>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('diagnosticos') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-save me-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

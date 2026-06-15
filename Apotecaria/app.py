@@ -24,7 +24,8 @@ from models import (
     get_profissional_by_id, atualizar_profissional, deletar_profissional,
     get_receita_by_id, atualizar_receita, deletar_receita,
     get_ingrediente_by_id, atualizar_ingrediente, deletar_ingrediente,
-    get_estatisticas
+    get_estatisticas, get_atendimento_by_id, atualizar_atendimento, deletar_atendimento,
+    get_diagnostico_by_id, atualizar_diagnostico, deletar_diagnostico
 )
 
 app = Flask(__name__)
@@ -484,6 +485,83 @@ def route_deletar_ingrediente(codigo):
         mysql.connection.rollback()
         flash(f'Erro ao deletar ingrediente: {e}', 'danger')
     return redirect(url_for('ingredientes'))
+
+# ───────────── ATENDIMENTO (EDIÇÃO / EXCLUSÃO) ─────────────
+@app.route('/editar_atendimento/<codigo>', methods=['GET', 'POST'])
+def editar_atendimento(codigo):
+    atendimento = get_atendimento_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_atendimento(
+                codigo,
+                request.form['codigo_profissional'],
+                request.form['codigo_paciente'],
+                request.form['data'],
+                request.form['hora'],
+                request.form['status']
+            )
+            flash('Atendimento atualizado com sucesso!', 'success')
+            return redirect(url_for('atendimentos'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar atendimento: {e}', 'danger')
+            
+    # Carregamos pacientes e profissionais para preencher os <select> dropdowns
+    pacientes = get_all_pacientes()
+    profissionais = get_all_profissionais()
+    return render_template('editar_atendimento.html', 
+                           atendimento=atendimento, 
+                           pacientes=pacientes, 
+                           profissionais=profissionais)
+
+@app.route('/deletar_atendimento/<codigo>', methods=['POST'])
+def route_deletar_atendimento(codigo):
+    try:
+        deletar_atendimento(codigo)
+        flash('Atendimento deletado com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar atendimento: {e}', 'danger')
+    return redirect(url_for('atendimentos'))
+
+
+# ───────────── DIAGNÓSTICO (EDIÇÃO / EXCLUSÃO) ─────────────
+@app.route('/editar_diagnostico/<codigo>', methods=['GET', 'POST'])
+def editar_diagnostico(codigo):
+    diagnostico = get_diagnostico_by_id(codigo)
+    if request.method == 'POST':
+        try:
+            atualizar_diagnostico(
+                codigo,
+                request.form['id_paciente'],
+                request.form['id_profissional'],
+                request.form['descricao'],
+                request.form['suspeita'],
+                request.form['data_avaliacao']
+            )
+            flash('Diagnóstico atualizado com sucesso!', 'success')
+            return redirect(url_for('diagnosticos'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar diagnóstico: {e}', 'danger')
+            
+    # Carregamos pacientes e profissionais para preencher os <select> dropdowns
+    pacientes = get_all_pacientes()
+    profissionais = get_all_profissionais()
+    return render_template('editar_diagnostico.html', 
+                           diagnostico=diagnostico, 
+                           pacientes=pacientes, 
+                           profissionais=profissionais)
+
+@app.route('/deletar_diagnostico/<codigo>', methods=['POST'])
+def route_deletar_diagnostico(codigo):
+    try:
+        deletar_diagnostico(codigo)
+        flash('Diagnóstico deletado com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao deletar diagnóstico: {e}', 'danger')
+    return redirect(url_for('diagnosticos'))
 
 
 if __name__ == '__main__':

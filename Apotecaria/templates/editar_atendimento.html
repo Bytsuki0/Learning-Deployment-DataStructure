@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Editar Atendimento{% endblock %}
+{% block page_title %}Editar Atendimento{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Editar Dados do Atendimento</strong>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('editar_atendimento', codigo=atendimento['Codigo_atendimento']) }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Código do Atendimento (Somente Leitura)</label>
+                <input type="number" class="form-control bg-light" name="codigo" value="{{ atendimento['Codigo_atendimento'] }}" readonly>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Paciente</label>
+                    <select class="form-select" name="codigo_paciente" required>
+                        <option value="">Selecione o Paciente...</option>
+                        {% for p in pacientes %}
+                            <option value="{{ p['Codigo_Paciente'] }}" {% if p['Codigo_Paciente'] == atendimento['Codigo_Paciente'] %}selected{% endif %}>
+                                {{ p['Codigo_Paciente'] }} - {{ p['Nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Profissional Responsável</label>
+                    <select class="form-select" name="codigo_profissional" required>
+                        <option value="">Selecione o Profissional...</option>
+                        {% for pr in profissionais %}
+                            <option value="{{ pr['Codigo_profissional'] }}" {% if pr['Codigo_profissional'] == atendimento['Codigo_profissional'] %}selected{% endif %}>
+                                {{ pr['Codigo_profissional'] }} - {{ pr['Nome'] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Data</label>
+                    <input type="date" class="form-control" name="data" value="{{ atendimento['Data'] }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Hora</label>
+                    <input type="time" class="form-control" name="hora" value="{{ atendimento['Hora'] }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" required>
+                        <option value="Agendado" {% if atendimento['Status'] == 'Agendado' %}selected{% endif %}>Agendado</option>
+                        <option value="Pendente" {% if atendimento['Status'] == 'Pendente' %}selected{% endif %}>Pendente</option>
+                        <option value="Concluído" {% if atendimento['Status'] == 'Concluído' %}selected{% endif %}>Concluído</option>
+                        <option value="Cancelado" {% if atendimento['Status'] == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                </div>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('atendimentos') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-save me-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

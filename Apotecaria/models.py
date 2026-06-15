@@ -565,3 +565,53 @@ def get_estatisticas():
             'numero_pacientes_atendimento': 0
         }
     return result
+
+
+# ---- ATENDIMENTOS (CRUD) ----
+def get_atendimento_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Atendimento WHERE Codigo_atendimento = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_atendimento(codigo, cod_prof, cod_pac, data, hora, status):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Atendimento
+        SET Codigo_profissional = %s, Codigo_Paciente = %s, Data = %s, Hora = %s, Status = %s
+        WHERE Codigo_atendimento = %s
+    """, (cod_prof, cod_pac, data, hora, status, codigo))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_atendimento(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Atendimento WHERE Codigo_atendimento = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ---- DIAGNÓSTICOS (CRUD) ----
+def get_diagnostico_by_id(codigo):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT * FROM Diagnostico WHERE Codigo_Diagnostico = %s", (codigo,))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def atualizar_diagnostico(codigo, id_pac, id_prof, descricao, suspeita, data_av):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Diagnostico
+        SET idPacientes = %s, idProfissionais_enfermaria = %s, Descricao = %s, Suspeita_identificada = %s, Data_avaliacao = %s
+        WHERE Codigo_Diagnostico = %s
+    """, (id_pac, id_prof, descricao, suspeita, data_av, codigo))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_diagnostico(codigo):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Diagnostico WHERE Codigo_Diagnostico = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
