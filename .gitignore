@@ -8,3 +8,5 @@ __pycache__
 ./Apotecariav2/venv/
 *.pyc
 *.venv
+__pycache__
+venv/

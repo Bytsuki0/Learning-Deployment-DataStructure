@@ -1,9 +1,0 @@
-Passos:
-1. Criar a pasta Biblioteca_APP20261
-2. Abrir a pasta no Vscode
-3. Abrir o terminal do VSCode
-4. no prompt: criar o venv com python -m venv venv
-5. no prompt: Ative o ambiente virtual: .\venv\Scripts\Activate
-6. no prompt: instalar o flask: pip install flask
-7. no prompt: gerar os requirements: pip freeze > requirements.txt
-8. Criar o arquivo principal do app: No Explorador de Arquivos do VS Code: Clique com o botão direito na pasta biblioteca_App20252, Escolha New File, Nomeie como app.py
