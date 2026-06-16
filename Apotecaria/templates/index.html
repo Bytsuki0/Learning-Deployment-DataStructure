@@ -111,19 +111,17 @@
             <div class="list-group list-group-flush" style="border-radius:0 0 12px 12px;">
                 <a href="{{ url_for('consulta_atendimentos_diagnostico') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-intersect text-muted me-2"></i>Atendimentos com Diagnóstico</span>
-                    <span class="query-badge join">INNER JOIN</span>
+               
                 </a>
                 <a href="{{ url_for('consulta_pacientes_tratamento') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-union text-muted me-2"></i>Pacientes e Tratamentos</span>
-                    <span class="query-badge left">LEFT JOIN</span>
+
                 </a>
                 <a href="{{ url_for('consulta_receitas_ingredientes') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-intersect text-muted me-2"></i>Receitas e Ingredientes</span>
-                    <span class="query-badge join">INNER JOIN</span>
                 </a>
                 <a href="{{ url_for('consulta_view_resumo') }}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3">
                     <span><i class="bi bi-eye text-muted me-2"></i>Visão Geral da Clínica</span>
-                    <span class="query-badge view">VIEW</span>
                 </a>
             </div>
         </div>

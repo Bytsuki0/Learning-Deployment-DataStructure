@@ -2,6 +2,7 @@ CREATE DATABASE IF NOT EXISTS clinica;
 USE clinica;
 
 
+
 CREATE TABLE Pacientes (
     Codigo_Paciente INT PRIMARY KEY,
     Nome VARCHAR(100),
@@ -19,6 +20,7 @@ CREATE TABLE Profissionais_enfermaria (
 );
 
 
+
 CREATE TABLE Atendimento (
     Codigo_atendimento INT PRIMARY KEY,
     Codigo_profissional INT,
@@ -29,6 +31,7 @@ CREATE TABLE Atendimento (
     FOREIGN KEY (Codigo_profissional) REFERENCES Profissionais_enfermaria(Codigo_profissional),
     FOREIGN KEY (Codigo_Paciente) REFERENCES Pacientes(Codigo_Paciente)
 );
+
 
 
 CREATE TABLE Diagnostico (
@@ -87,6 +90,7 @@ CREATE TABLE Ingredientes (
 );
 
 
+
 CREATE TABLE Criacao (
     Codigo_receita INT,
     Codigo_ingrediente INT,
@@ -95,6 +99,7 @@ CREATE TABLE Criacao (
     FOREIGN KEY (Codigo_receita)     REFERENCES Receita_Tratamentos(Codigo_receita),
     FOREIGN KEY (Codigo_ingrediente) REFERENCES Ingredientes(Codigo_ingrediente)
 );
+
 
 
 CREATE TABLE Estatisticas (
@@ -194,6 +199,7 @@ VALUES (1, 0, 0, 0)
 ON DUPLICATE KEY UPDATE id=id;
 
 
+
 DELIMITER $$
 CREATE TRIGGER trg_after_insert_paciente
 AFTER INSERT ON Pacientes
@@ -216,6 +222,7 @@ BEGIN
     WHERE id = 1;
 END$$
 DELIMITER ;
+
 
 
 DELIMITER $$
