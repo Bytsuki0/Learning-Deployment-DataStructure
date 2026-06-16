@@ -156,9 +156,6 @@ def adicionar_ingrediente(codigo, nome, tipo, qtd, origem, toxicidade):
     mysql.connection.commit()
     cur.close()
 
-# ─────────────────────────────────────────
-# CONSULTAS ESPECIAIS (JOIN / LEFT JOIN / VIEW)
-# ─────────────────────────────────────────
 
 def get_atendimentos_com_diagnostico():
     """
