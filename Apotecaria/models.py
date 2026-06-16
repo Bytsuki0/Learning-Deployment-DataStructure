@@ -18,7 +18,7 @@ def get_all_pacientes():
 def adicionar_paciente(codigo, nome, idade, cargo, historico, data_nasc):
     cur = mysql.connection.cursor()
     # Chama a função criada no banco de dados passando os parâmetros
-    cur.execute("SELECT fn_adicionar_paciente(%s, %s, %s, %s, %s, %s)", 
+    cur.execute("call pr_adicionar_paciente(%s, %s, %s, %s, %s, %s)", 
                 (codigo, nome, idade, cargo, historico, data_nasc))
     mysql.connection.commit()
     cur.close()
@@ -36,7 +36,7 @@ def get_all_profissionais():
 def adicionar_profissional(codigo, nome, funcao, especialidade):
     cur = mysql.connection.cursor()
     # Chama a função criada no banco de dados passando os parâmetros
-    cur.execute("SELECT fn_adicionar_profissional(%s, %s, %s, %s)", 
+    cur.execute("call pr_adicionar_profissional(%s, %s, %s, %s)", 
                 (codigo, nome, funcao, especialidade))
     mysql.connection.commit()
     cur.close()
@@ -408,34 +408,10 @@ def get_view_resumo_clinica():
     """
     cur = mysql.connection.cursor(DictCursor)
     cur.execute("""
-        SELECT
-            p.Nome              AS Paciente,
-            p.Idade,
-            pr.Nome             AS Profissional,
-            pr.Especialidade,
-            a.Data              AS Data_Atendimento,
-            a.Status            AS Status_Atendimento,
-            d.Suspeita_identificada AS Suspeita,
-            rt.Nome_tratamento  AS Tratamento,
-            rt.Dosagem,
-            rt.Duracao,
-            rt.Status           AS Status_Tratamento
-        FROM Atendimento a
-        INNER JOIN Pacientes p
-            ON a.Codigo_Paciente = p.Codigo_Paciente
-        INNER JOIN Profissionais_enfermaria pr
-            ON a.Codigo_profissional = pr.Codigo_profissional
-        LEFT JOIN Diagnostico d
-            ON d.idPacientes = p.Codigo_Paciente
-           AND d.idProfissionais_enfermaria = pr.Codigo_profissional
-        LEFT JOIN Resultado r
-            ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
-        LEFT JOIN Receita_Tratamentos rt
-            ON rt.Codigo_tratamento = r.Codigo_tratamento
-        ORDER BY a.Data DESC
+        select * from ViewClinica
     """)
     result = cur.fetchall()
-    cur.close()
+    cur.close()    
     return result
 
 
@@ -545,6 +521,60 @@ def deletar_ingrediente(codigo):
     cur.close()
     
 
+def get_ingredientes_estoque_baixo(limite=10):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            Codigo_ingrediente,
+            Nome,
+            Tipo,
+            Quantidade_disponivel,
+            Origem,
+            Nivel_toxicidade
+        FROM Ingredientes
+        WHERE Quantidade_disponivel <= %s
+        ORDER BY Quantidade_disponivel ASC
+    """, (limite,))
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def get_historico_completo_paciente(codigo_paciente):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            p.Nome                  AS Paciente,
+            a.Data                  AS Data_Atendimento,
+            a.Hora,
+            a.Status                AS Status_Atendimento,
+            pr.Nome                 AS Profissional,
+            pr.Especialidade,
+            d.Descricao             AS Descricao_Diagnostico,
+            d.Suspeita_identificada,
+            d.Data_avaliacao,
+            rt.Nome_tratamento      AS Tratamento,
+            rt.Dosagem,
+            rt.Duracao,
+            rt.Status               AS Status_Tratamento
+        FROM Pacientes p
+        LEFT JOIN Atendimento a
+            ON a.Codigo_Paciente = p.Codigo_Paciente
+        LEFT JOIN Profissionais_enfermaria pr
+            ON a.Codigo_profissional = pr.Codigo_profissional
+        LEFT JOIN Diagnostico d
+            ON d.idPacientes = p.Codigo_Paciente
+           AND d.idProfissionais_enfermaria = pr.Codigo_profissional
+        LEFT JOIN Resultado r
+            ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
+        LEFT JOIN Receita_Tratamentos rt
+            ON rt.Codigo_tratamento = r.Codigo_tratamento
+        WHERE p.Codigo_Paciente = %s
+        ORDER BY a.Data DESC, a.Hora DESC
+    """, (codigo_paciente,))
+    result = cur.fetchall()
+    cur.close()
+    return result
+
 def get_estatisticas():
     """
     Busca a linha de métricas e totais da tabela Estatisticas.
@@ -610,5 +640,117 @@ def atualizar_diagnostico(codigo, id_pac, id_prof, descricao, suspeita, data_av)
 def deletar_diagnostico(codigo):
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM Diagnostico WHERE Codigo_Diagnostico = %s", (codigo,))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ─────────────────────────────────────────
+# CRIA (Profissional ↔ Receita)
+# ─────────────────────────────────────────
+def get_all_cria():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            c.Codigo_receita,
+            c.Codigo_profissional,
+            rt.Nome_formula,
+            rt.Nome_tratamento,
+            pr.Nome  AS Profissional_Nome,
+            pr.Funcao
+        FROM Cria c
+        INNER JOIN Receita_Tratamentos rt
+            ON rt.Codigo_receita = c.Codigo_receita
+        INNER JOIN Profissionais_enfermaria pr
+            ON pr.Codigo_profissional = c.Codigo_profissional
+        ORDER BY c.Codigo_receita
+    """)
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def adicionar_cria(cod_receita, cod_profissional):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Cria (Codigo_receita, Codigo_profissional)
+        VALUES (%s, %s)
+    """, (cod_receita, cod_profissional))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_cria(cod_receita, cod_profissional):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        DELETE FROM Cria WHERE Codigo_receita = %s AND Codigo_profissional = %s
+    """, (cod_receita, cod_profissional))
+    mysql.connection.commit()
+    cur.close()
+
+
+# ─────────────────────────────────────────
+# CRIACAO (Receita ↔ Ingrediente)
+# ─────────────────────────────────────────
+def get_all_criacao():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            c.Codigo_receita,
+            c.Codigo_ingrediente,
+            c.Quantidade_ingrediente,
+            rt.Nome_formula,
+            i.Nome  AS Ingrediente_Nome,
+            i.Tipo,
+            i.Nivel_toxicidade
+        FROM Criacao c
+        INNER JOIN Receita_Tratamentos rt
+            ON rt.Codigo_receita = c.Codigo_receita
+        INNER JOIN Ingredientes i
+            ON i.Codigo_ingrediente = c.Codigo_ingrediente
+        ORDER BY c.Codigo_receita, i.Nome
+    """)
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def get_criacao_by_ids(cod_receita, cod_ingrediente):
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            c.Codigo_receita,
+            c.Codigo_ingrediente,
+            c.Quantidade_ingrediente,
+            rt.Nome_formula,
+            i.Nome AS Ingrediente_Nome
+        FROM Criacao c
+        INNER JOIN Receita_Tratamentos rt ON rt.Codigo_receita = c.Codigo_receita
+        INNER JOIN Ingredientes i ON i.Codigo_ingrediente = c.Codigo_ingrediente
+        WHERE c.Codigo_receita = %s AND c.Codigo_ingrediente = %s
+    """, (cod_receita, cod_ingrediente))
+    result = cur.fetchone()
+    cur.close()
+    return result
+
+def adicionar_criacao(cod_receita, cod_ingrediente, quantidade):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Criacao (Codigo_receita, Codigo_ingrediente, Quantidade_ingrediente)
+        VALUES (%s, %s, %s)
+    """, (cod_receita, cod_ingrediente, quantidade))
+    mysql.connection.commit()
+    cur.close()
+
+def atualizar_criacao(cod_receita, cod_ingrediente, quantidade):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Criacao SET Quantidade_ingrediente = %s
+        WHERE Codigo_receita = %s AND Codigo_ingrediente = %s
+    """, (quantidade, cod_receita, cod_ingrediente))
+    mysql.connection.commit()
+    cur.close()
+
+def deletar_criacao(cod_receita, cod_ingrediente):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        DELETE FROM Criacao WHERE Codigo_receita = %s AND Codigo_ingrediente = %s
+    """, (cod_receita, cod_ingrediente))
     mysql.connection.commit()
     cur.close()

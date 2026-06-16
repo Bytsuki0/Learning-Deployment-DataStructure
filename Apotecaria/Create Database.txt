@@ -112,7 +112,7 @@ CREATE TABLE Estatisticas (
 
 DELIMITER $$
 
-CREATE FUNCTION IF NOT EXISTS fn_adicionar_paciente(
+CREATE PROCEDURE IF NOT EXISTS pr_adicionar_paciente(
     p_codigo INT,
     p_nome VARCHAR(100),
     p_idade INT,
@@ -120,28 +120,22 @@ CREATE FUNCTION IF NOT EXISTS fn_adicionar_paciente(
     p_historico TEXT,
     p_data_nasc DATE
 ) 
-RETURNS INT
-DETERMINISTIC
 BEGIN
     INSERT INTO Pacientes (Codigo_Paciente, Nome, Idade, Cargo, Historico_medico, Data_nascimento)
     VALUES (p_codigo, p_nome, p_idade, p_cargo, p_historico, p_data_nasc);
-    RETURN 1; -- Retorna 1 indicando sucesso
 END$$
+DELIMITER ;
 
-
-
-CREATE FUNCTION IF NOT EXISTS fn_adicionar_profissional(
+DELIMITER ;
+CREATE PROCEDURE IF NOT EXISTS pr_adicionar_profissional(
     p_codigo INT,
     p_nome VARCHAR(100),
     p_funcao VARCHAR(50),
     p_especialidade VARCHAR(100)
 ) 
-RETURNS INT
-DETERMINISTIC
 BEGIN
     INSERT INTO Profissionais_enfermaria (Codigo_profissional, Nome, Funcao, Especialidade)
     VALUES (p_codigo, p_nome, p_funcao, p_especialidade);
-    RETURN 1; -- Retorna 1 indicando sucesso
 END$$
 
 DELIMITER ;
@@ -168,7 +162,7 @@ BEGIN
     ORDER BY rt.Codigo_receita, i.Nome;
 END$$
 
-CREATE PROCEDURE IF NOT EXISTS sp_get_pacientes_com_tratamento()
+CREATE FUNCTION IF NOT EXISTS fc_get_pacientes_com_tratamento()
 BEGIN
     SELECT
         p.Codigo_Paciente,
@@ -262,7 +256,7 @@ DELIMITER ;
 
 
 DELIMITER $$
-CREATE TRIGGER trg_after_insert_paciente
+CREATE TRIGGER trg_after_delete_paciente
 AFTER DELETE ON Pacientes
 FOR EACH ROW
 BEGIN
@@ -270,4 +264,85 @@ BEGIN
     SET numero_pacientes = numero_pacientes - 1 
     WHERE id = 1;
 END$$
+DELIMITER ;
+
+Create View ViewClinica AS
+SELECT
+            p.Nome              AS Paciente,
+            p.Idade,
+            pr.Nome             AS Profissional,
+            pr.Especialidade,
+            a.Data              AS Data_Atendimento,
+            a.Status            AS Status_Atendimento,
+            d.Suspeita_identificada AS Suspeita,
+            rt.Nome_tratamento  AS Tratamento,
+            rt.Dosagem,
+            rt.Duracao,
+            rt.Status           AS Status_Tratamento
+        FROM Atendimento a
+        INNER JOIN Pacientes p
+            ON a.Codigo_Paciente = p.Codigo_Paciente
+        INNER JOIN Profissionais_enfermaria pr
+            ON a.Codigo_profissional = pr.Codigo_profissional
+        LEFT JOIN Diagnostico d
+            ON d.idPacientes = p.Codigo_Paciente
+           AND d.idProfissionais_enfermaria = pr.Codigo_profissional
+        LEFT JOIN Resultado r
+            ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
+        LEFT JOIN Receita_Tratamentos rt
+            ON rt.Codigo_tratamento = r.Codigo_tratamento
+        ORDER BY a.Data DESC;
+
+DELIMITER $$
+
+CREATE PROCEDURE IF NOT EXISTS sp_get_ingredientes_estoque_baixo(
+    p_limite INT
+)
+BEGIN
+    SELECT
+        Codigo_ingrediente,
+        Nome,
+        Tipo,
+        Quantidade_disponivel,
+        Origem,
+        Nivel_toxicidade
+    FROM Ingredientes
+    WHERE Quantidade_disponivel <= p_limite
+    ORDER BY Quantidade_disponivel ASC;
+END$$
+
+CREATE PROCEDURE IF NOT EXISTS sp_get_historico_completo_paciente(
+    p_codigo INT
+)
+BEGIN
+    SELECT
+        p.Nome                  AS Paciente,
+        a.Data                  AS Data_Atendimento,
+        a.Hora,
+        a.Status                AS Status_Atendimento,
+        pr.Nome                 AS Profissional,
+        pr.Especialidade,
+        d.Descricao             AS Descricao_Diagnostico,
+        d.Suspeita_identificada,
+        d.Data_avaliacao,
+        rt.Nome_tratamento      AS Tratamento,
+        rt.Dosagem,
+        rt.Duracao,
+        rt.Status               AS Status_Tratamento
+    FROM Pacientes p
+    LEFT JOIN Atendimento a
+        ON a.Codigo_Paciente = p.Codigo_Paciente
+    LEFT JOIN Profissionais_enfermaria pr
+        ON a.Codigo_profissional = pr.Codigo_profissional
+    LEFT JOIN Diagnostico d
+        ON d.idPacientes = p.Codigo_Paciente
+       AND d.idProfissionais_enfermaria = pr.Codigo_profissional
+    LEFT JOIN Resultado r
+        ON r.Codigo_Diagnostico = d.Codigo_Diagnostico
+    LEFT JOIN Receita_Tratamentos rt
+        ON rt.Codigo_tratamento = r.Codigo_tratamento
+    WHERE p.Codigo_Paciente = p_codigo
+    ORDER BY a.Data DESC, a.Hora DESC;
+END$$
+
 DELIMITER ;

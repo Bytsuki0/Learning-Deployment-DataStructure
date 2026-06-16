@@ -8,21 +8,6 @@
 <div class="card mb-4">
     <div class="card-body p-4">
         <div class="d-flex align-items-start gap-3 flex-wrap">
-            <div style="flex:1;">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    {% if tipo == 'join' %}
-                        <span class="query-badge join"><i class="bi bi-intersect"></i> INNER JOIN</span>
-                    {% elif tipo == 'left' %}
-                        <span class="query-badge left"><i class="bi bi-union"></i> LEFT JOIN</span>
-                    {% else %}
-                        <span class="query-badge view"><i class="bi bi-eye"></i> VIEW</span>
-                    {% endif %}
-                    <span class="text-muted" style="font-size:.8rem;">
-                        {{ dados|length }} registro(s) encontrado(s)
-                    </span>
-                </div>
-                <p class="mb-0 text-muted" style="font-size:.875rem;">{{ descricao }}</p>
-            </div>
             <a href="{{ url_for('consultas') }}" class="btn btn-outline-slate">
                 <i class="bi bi-arrow-left me-1"></i> Voltar
             </a>

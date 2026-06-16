@@ -16,42 +16,35 @@
                 <i class="bi bi-funnel"></i>
             {% elif tipo == 'like' %}
                 <i class="bi bi-search"></i>
-            {% elif tipo == 'estoque' %}
-                <i class="bi bi-exclamation-triangle"></i>
-            {% elif tipo == 'historico' %}
-                <i class="bi bi-clock-history"></i>
             {% endif %}
             <strong>{{ titulo }}</strong>
         </div>
-        
+        <span class="query-badge {{ tipo }}">
+            {% if tipo == 'group' %}GROUP BY
+            {% elif tipo == 'order' %}ORDER BY
+            {% elif tipo == 'having' %}HAVING
+            {% elif tipo == 'like' %}LIKE %{% endif %}
+        </span>
+    </div>
+    <div style="padding: 18px 20px;">
+        <p class="text-muted mb-0">{{ descricao }}</p>
     </div>
 </div>
 
-<!-- Formulário de busca (LIKE e HISTORICO) -->
-{% if tipo == 'like' or tipo == 'historico' %}
+<!-- Formulário de busca (somente para consultas com LIKE) -->
+{% if tipo == 'like' %}
 <div class="card mb-4">
     <div style="padding: 18px 20px;">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-sm-8 col-md-6">
-                {% if tipo == 'historico' %}
-                    <label class="form-label">Código do Paciente</label>
-                    <input
-                        type="number"
-                        name="codigo"
-                        class="form-control"
-                        placeholder="Digite o código do paciente..."
-                        value="{{ termo or '' }}"
-                        autofocus>
-                {% else %}
-                    <label class="form-label">Termo de busca</label>
-                    <input
-                        type="text"
-                        name="termo"
-                        class="form-control"
-                        placeholder="Digite parte do nome ou texto a buscar..."
-                        value="{{ termo or '' }}"
-                        autofocus>
-                {% endif %}
+                <label class="form-label">Termo de busca</label>
+                <input
+                    type="text"
+                    name="termo"
+                    class="form-control"
+                    placeholder="Digite parte do nome ou texto a buscar..."
+                    value="{{ termo or '' }}"
+                    autofocus>
             </div>
             <div class="col-sm-4 col-md-3">
                 <button type="submit" class="btn-teal w-100">
@@ -59,27 +52,10 @@
                 </button>
             </div>
         </form>
-    </div>
-</div>
-{% elif tipo == 'estoque' %}
-<div class="card mb-4">
-    <div style="padding: 18px 20px;">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-sm-4 col-md-3">
-                <label class="form-label">Limite de estoque</label>
-                <input
-                    type="number"
-                    name="limite"
-                    class="form-control"
-                    min="1"
-                    value="{{ limite or 10 }}">
-            </div>
-            <div class="col-sm-4 col-md-3">
-                <button type="submit" class="btn-teal w-100">
-                    <i class="bi bi-filter me-1"></i> Filtrar
-                </button>
-            </div>
-        </form>
+        <small class="text-muted d-block mt-2">
+            A consulta utiliza <code>LIKE '%{{ termo or 'termo' }}%'</code>,
+            retornando registros que contenham o termo em qualquer posição do texto.
+        </small>
     </div>
 </div>
 {% endif %}
@@ -125,17 +101,6 @@
                 <i class="bi bi-search"></i>
                 Digite um termo no campo acima e clique em "Buscar" para ver os resultados.
             {% endif %}
-        {% elif tipo == 'historico' %}
-            {% if termo %}
-                <i class="bi bi-emoji-frown"></i>
-                Nenhum histórico encontrado para o paciente <strong>{{ termo }}</strong>.
-            {% else %}
-                <i class="bi bi-clock-history"></i>
-                Digite o código do paciente acima e clique em "Buscar".
-            {% endif %}
-        {% elif tipo == 'estoque' %}
-            <i class="bi bi-check-circle"></i>
-            Nenhum ingrediente com estoque abaixo de <strong>{{ limite }}</strong>.
         {% else %}
             <i class="bi bi-inbox"></i>
             Nenhum registro encontrado para esta consulta.

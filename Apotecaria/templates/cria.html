@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Profissional ↔ Receita{% endblock %}
+{% block page_title %}Associações: Profissional ↔ Receita{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('cadastro_cria') }}" class="btn btn-teal">
+        <i class="bi bi-plus-lg me-1"></i> Nova Associação
+    </a>
+</div>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-link-45deg"></i>
+        <strong>Profissionais por Receita (Tabela Cria)</strong>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cód. Receita</th>
+                    <th>Fórmula</th>
+                    <th>Tratamento</th>
+                    <th>Cód. Profissional</th>
+                    <th>Profissional</th>
+                    <th>Função</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in cria %}
+                <tr>
+                    <td><span class="badge-base badge-teal">{{ c['Codigo_receita'] }}</span></td>
+                    <td><strong>{{ c['Nome_formula'] or '—' }}</strong></td>
+                    <td>{{ c['Nome_tratamento'] or '—' }}</td>
+                    <td><span class="badge-base badge-info">{{ c['Codigo_profissional'] }}</span></td>
+                    <td><strong>{{ c['Profissional_Nome'] }}</strong></td>
+                    <td>{{ c['Funcao'] or '—' }}</td>
+                    <td>
+                        <form action="{{ url_for('route_deletar_cria', cod_receita=c['Codigo_receita'], cod_profissional=c['Codigo_profissional']) }}"
+                              method="POST" style="display:inline;"
+                              onsubmit="return confirm('Remover esta associação?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Remover">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-link"></i>
+                            Nenhuma associação cadastrada.
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

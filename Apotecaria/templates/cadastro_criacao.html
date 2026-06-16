@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Adicionar Ingrediente à Receita{% endblock %}
+{% block page_title %}Adicionar Ingrediente à Receita{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-7">
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-eyedropper"></i>
+        <strong>Vincular Ingrediente a uma Receita</strong>
+    </div>
+    <div class="card-body p-4">
+        <form action="{{ url_for('cadastro_criacao') }}" method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Receita / Tratamento</label>
+                    <select name="codigo_receita" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for r in receitas %}
+                        <option value="{{ r['Codigo_receita'] }}">
+                            {{ r['Nome_formula'] or r['Nome_tratamento'] or '—' }} ({{ r['Codigo_receita'] }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Ingrediente</label>
+                    <select name="codigo_ingrediente" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for i in ingredientes %}
+                        <option value="{{ i['Codigo_ingrediente'] }}">
+                            {{ i['Nome'] }} — {{ i['Tipo'] or '—' }} ({{ i['Codigo_ingrediente'] }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" name="quantidade" class="form-control" min="1" required>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-check-lg me-1"></i> Salvar
+                </button>
+                <a href="{{ url_for('criacao') }}" class="btn btn-outline-slate">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

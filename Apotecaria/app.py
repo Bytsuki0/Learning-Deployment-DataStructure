@@ -25,7 +25,10 @@ from models import (
     get_receita_by_id, atualizar_receita, deletar_receita,
     get_ingrediente_by_id, atualizar_ingrediente, deletar_ingrediente,
     get_estatisticas, get_atendimento_by_id, atualizar_atendimento, deletar_atendimento,
-    get_diagnostico_by_id, atualizar_diagnostico, deletar_diagnostico
+    get_diagnostico_by_id, atualizar_diagnostico, deletar_diagnostico,
+    get_all_cria, adicionar_cria, deletar_cria,
+    get_all_criacao, get_criacao_by_ids, adicionar_criacao, atualizar_criacao, deletar_criacao,
+    get_ingredientes_estoque_baixo, get_historico_completo_paciente,
 )
 
 app = Flask(__name__)
@@ -222,7 +225,7 @@ def consultas():
 def consulta_atendimentos_diagnostico():
     dados = get_atendimentos_com_diagnostico()
     return render_template('consulta_join.html',
-                           titulo='Atendimentos com Diagnóstico (INNER JOIN)',
+                           titulo='Atendimentos com Diagnóstico',
                            descricao='Exibe apenas os atendimentos que possuem um diagnóstico associado, '
                                      'cruzando Atendimento → Paciente → Profissional → Diagnóstico.',
                            tipo='join',
@@ -232,7 +235,7 @@ def consulta_atendimentos_diagnostico():
 def consulta_pacientes_tratamento():
     dados = get_pacientes_com_tratamento()
     return render_template('consulta_join.html',
-                           titulo='Pacientes e seus Tratamentos (LEFT JOIN)',
+                           titulo='Pacientes e seus Tratamentos',
                            descricao='Lista todos os pacientes, incluindo os que ainda não possuem '
                                      'diagnóstico ou tratamento registrado.',
                            tipo='left',
@@ -242,7 +245,7 @@ def consulta_pacientes_tratamento():
 def consulta_receitas_ingredientes():
     dados = get_receitas_com_ingredientes()
     return render_template('consulta_join.html',
-                           titulo='Receitas e seus Ingredientes (INNER JOIN)',
+                           titulo='Receitas e seus Ingredientes',
                            descricao='Mostra cada receita com os ingredientes utilizados, quantidades e '
                                      'nível de toxicidade, via Receita_Tratamentos → Criacao → Ingredientes.',
                            tipo='join',
@@ -252,7 +255,7 @@ def consulta_receitas_ingredientes():
 def consulta_view_resumo():
     dados = get_view_resumo_clinica()
     return render_template('consulta_join.html',
-                           titulo='Visão Geral da Clínica (VIEW)',
+                           titulo='Visão Geral da Clínica',
                            descricao='Relatório consolidado simulando uma VIEW de banco de dados: '
                                      'paciente, profissional, atendimento, diagnóstico e tratamento em uma única consulta.',
                            tipo='view',
@@ -562,6 +565,120 @@ def route_deletar_diagnostico(codigo):
         mysql.connection.rollback()
         flash(f'Erro ao deletar diagnóstico: {e}', 'danger')
     return redirect(url_for('diagnosticos'))
+
+
+# ───────────── CRIA (Profissional ↔ Receita) ─────────────
+@app.route('/cria')
+def cria():
+    dados = get_all_cria()
+    return render_template('cria.html', cria=dados)
+
+@app.route('/cadastro_cria', methods=['GET', 'POST'])
+def cadastro_cria():
+    if request.method == 'POST':
+        try:
+            adicionar_cria(
+                request.form['codigo_receita'],
+                request.form['codigo_profissional'],
+            )
+            flash('Associação Profissional ↔ Receita criada com sucesso!', 'success')
+            return redirect(url_for('cria'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao criar associação: {e}', 'danger')
+            return redirect(url_for('cadastro_cria'))
+    receitas = get_all_receitas()
+    profissionais = get_all_profissionais()
+    return render_template('cadastro_cria.html', receitas=receitas, profissionais=profissionais)
+
+@app.route('/deletar_cria/<int:cod_receita>/<int:cod_profissional>', methods=['POST'])
+def route_deletar_cria(cod_receita, cod_profissional):
+    try:
+        deletar_cria(cod_receita, cod_profissional)
+        flash('Associação removida com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao remover associação: {e}', 'danger')
+    return redirect(url_for('cria'))
+
+
+# ───────────── CRIACAO (Receita ↔ Ingrediente) ─────────────
+@app.route('/criacao')
+def criacao():
+    dados = get_all_criacao()
+    return render_template('criacao.html', criacao=dados)
+
+@app.route('/cadastro_criacao', methods=['GET', 'POST'])
+def cadastro_criacao():
+    if request.method == 'POST':
+        try:
+            adicionar_criacao(
+                request.form['codigo_receita'],
+                request.form['codigo_ingrediente'],
+                request.form['quantidade'],
+            )
+            flash('Ingrediente adicionado à receita com sucesso!', 'success')
+            return redirect(url_for('criacao'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao adicionar ingrediente à receita: {e}', 'danger')
+            return redirect(url_for('cadastro_criacao'))
+    receitas = get_all_receitas()
+    ingredientes = get_all_ingredientes()
+    return render_template('cadastro_criacao.html', receitas=receitas, ingredientes=ingredientes)
+
+@app.route('/editar_criacao/<int:cod_receita>/<int:cod_ingrediente>', methods=['GET', 'POST'])
+def editar_criacao(cod_receita, cod_ingrediente):
+    criacao_item = get_criacao_by_ids(cod_receita, cod_ingrediente)
+    if request.method == 'POST':
+        try:
+            atualizar_criacao(cod_receita, cod_ingrediente, request.form['quantidade'])
+            flash('Quantidade atualizada com sucesso!', 'success')
+            return redirect(url_for('criacao'))
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Erro ao atualizar quantidade: {e}', 'danger')
+    receitas = get_all_receitas()
+    ingredientes = get_all_ingredientes()
+    return render_template('editar_criacao.html',
+                           criacao=criacao_item,
+                           receitas=receitas,
+                           ingredientes=ingredientes)
+
+@app.route('/deletar_criacao/<int:cod_receita>/<int:cod_ingrediente>', methods=['POST'])
+def route_deletar_criacao(cod_receita, cod_ingrediente):
+    try:
+        deletar_criacao(cod_receita, cod_ingrediente)
+        flash('Ingrediente removido da receita com sucesso!', 'success')
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f'Erro ao remover ingrediente: {e}', 'danger')
+    return redirect(url_for('criacao'))
+
+
+@app.route('/consulta/estoque_baixo')
+def consulta_estoque_baixo():
+    limite = request.args.get('limite', 10, type=int)
+    dados = get_ingredientes_estoque_baixo(limite)
+    return render_template('consulta_avancada.html',
+                           titulo='Ingredientes com Estoque Baixo',
+                           descricao=f'Lista ingredientes com quantidade disponível menor ou igual a {limite}, '
+                                     'ordenados do mais crítico para o menos crítico.',
+                           tipo='estoque',
+                           dados=dados,
+                           limite=limite)
+
+@app.route('/consulta/historico_paciente')
+def consulta_historico_paciente():
+    codigo = request.args.get('codigo', '').strip()
+    dados = get_historico_completo_paciente(codigo) if codigo else []
+    return render_template('consulta_avancada.html',
+                           titulo='Histórico Completo do Paciente',
+                           descricao='Exibe todos os atendimentos, diagnósticos e tratamentos de um paciente, '
+                                     'em ordem cronológica decrescente.',
+                           tipo='historico',
+                           dados=dados,
+                           termo=codigo)
 
 
 if __name__ == '__main__':

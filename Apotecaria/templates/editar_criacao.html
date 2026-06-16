@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Editar Quantidade — Criação{% endblock %}
+{% block page_title %}Editar Quantidade de Ingrediente{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-6">
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-pencil-square"></i>
+        <strong>Atualizar Quantidade</strong>
+    </div>
+    <div class="card-body p-4">
+        <form action="{{ url_for('editar_criacao', cod_receita=criacao['Codigo_receita'], cod_ingrediente=criacao['Codigo_ingrediente']) }}"
+              method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Receita</label>
+                    <input type="text" class="form-control" value="{{ criacao['Nome_formula'] or criacao['Codigo_receita'] }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Ingrediente</label>
+                    <input type="text" class="form-control" value="{{ criacao['Ingrediente_Nome'] or criacao['Codigo_ingrediente'] }}" disabled>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" name="quantidade" class="form-control" min="1"
+                           value="{{ criacao['Quantidade_ingrediente'] }}" required>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-teal">
+                    <i class="bi bi-check-lg me-1"></i> Salvar Alteração
+                </button>
+                <a href="{{ url_for('criacao') }}" class="btn btn-outline-slate">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}
