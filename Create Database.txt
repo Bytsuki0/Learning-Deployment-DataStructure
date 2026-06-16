@@ -126,7 +126,7 @@ BEGIN
 END$$
 DELIMITER ;
 
-DELIMITER ;
+DELIMITER$$
 CREATE PROCEDURE IF NOT EXISTS pr_adicionar_profissional(
     p_codigo INT,
     p_nome VARCHAR(100),
