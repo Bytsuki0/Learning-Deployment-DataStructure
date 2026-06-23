@@ -54,7 +54,7 @@
                 <div class="stat-icon teal"><i class="bi bi-capsule"></i></div>
                 <div>
                     <div class="stat-label">Receitas / Tratamentos</div>
-                    <div class="stat-value" style="color:var(--teal)">Prescrições</div>
+                    <div class="stat-value" style="color:var(--teal)">{{ stats['numero_receitas'] }}</div>
                 </div>
             </div>
         </a>
@@ -65,7 +65,7 @@
                 <div class="stat-icon purple"><i class="bi bi-eyedropper"></i></div>
                 <div>
                     <div class="stat-label">Ingredientes</div>
-                    <div class="stat-value" style="color:#7e22ce">Estoque</div>
+                    <div class="stat-value" style="color:#7e22ce">{{ stats['numero_ingredientes'] }}</div>
                 </div>
             </div>
         </a>

@@ -346,3 +346,25 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE FUNCTION IF NOT EXISTS fc_contar_ingredientes_em_estoque()
+RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE total INT;
+    SELECT COUNT(*) INTO total FROM Ingredientes;
+    RETURN total;
+END$$
+
+CREATE FUNCTION IF NOT EXISTS fc_contar_receitas()
+RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE total INT;
+    SELECT COUNT(*) INTO total FROM Receita_Tratamentos;
+    RETURN total;
+END$$
+
+DELIMITER ;

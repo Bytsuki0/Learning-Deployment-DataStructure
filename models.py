@@ -575,6 +575,20 @@ def get_historico_completo_paciente(codigo_paciente):
     cur.close()
     return result
 
+def contar_ingredientes_em_estoque():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT COUNT(*) AS total FROM Ingredientes")
+    result = cur.fetchone()
+    cur.close()
+    return result['total'] if result else 0
+
+def contar_receitas():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("SELECT COUNT(*) AS total FROM Receita_Tratamentos")
+    result = cur.fetchone()
+    cur.close()
+    return result['total'] if result else 0
+
 def get_estatisticas():
     """
     Busca a linha de métricas e totais da tabela Estatisticas.
@@ -583,14 +597,16 @@ def get_estatisticas():
     cur.execute("SELECT * FROM Estatisticas WHERE id = 1")
     result = cur.fetchone()
     cur.close()
-    
+
     # Caso a tabela esteja vazia por algum motivo, retorna valores zerados padrão
     if not result:
-        return {
-            'numero_pacientes': 0, 
-            'numero_profissionais': 0, 
-            'numero_pacientes_atendimento': 0
+        result = {
+            'numero_pacientes': 0,
+            'numero_profissionais': 0,
+            'numero_pacientes_atendimento': 0,
         }
+    result['numero_ingredientes'] = contar_ingredientes_em_estoque()
+    result['numero_receitas'] = contar_receitas()
     return result
 
 
