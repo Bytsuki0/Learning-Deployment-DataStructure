@@ -29,6 +29,7 @@ from models import (
     get_all_cria, adicionar_cria, deletar_cria,
     get_all_criacao, get_criacao_by_ids, adicionar_criacao, atualizar_criacao, deletar_criacao,
     get_ingredientes_estoque_baixo, get_historico_completo_paciente,
+    get_ingredientes_por_receita, get_total_uso_ingredientes,
 )
 
 app = Flask(__name__)
@@ -41,7 +42,11 @@ mysql.init_app(app)
 @app.route('/')
 def index():
     stats = get_estatisticas()
-    return render_template('index.html', stats=stats)
+    ingred_por_receita = get_ingredientes_por_receita()
+    total_uso = get_total_uso_ingredientes()
+    return render_template('index.html', stats=stats,
+                           ingred_por_receita=ingred_por_receita,
+                           total_uso=total_uso)
 
 
 

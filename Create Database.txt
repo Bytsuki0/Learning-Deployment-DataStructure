@@ -354,7 +354,7 @@ RETURNS INT
 READS SQL DATA
 BEGIN
     DECLARE total INT;
-    SELECT COUNT(*) INTO total FROM Ingredientes;
+    SELECT COALESCE(SUM(Quantidade_disponivel), 0) INTO total FROM Ingredientes;
     RETURN total;
 END$$
 
@@ -364,6 +364,22 @@ READS SQL DATA
 BEGIN
     DECLARE total INT;
     SELECT COUNT(*) INTO total FROM Receita_Tratamentos;
+    RETURN total;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE FUNCTION IF NOT EXISTS fc_contar_uso_ingrediente(p_codigo_ingrediente INT)
+RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE total INT;
+    SELECT COUNT(*) INTO total
+    FROM Criacao
+    WHERE Codigo_ingrediente = p_codigo_ingrediente;
     RETURN total;
 END$$
 

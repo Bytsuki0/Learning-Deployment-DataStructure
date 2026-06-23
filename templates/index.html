@@ -72,6 +72,113 @@
     </div>
 </div>
 
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clipboard-data"></i>
+                <strong>Estatísticas de Ingredientes</strong>
+            </div>
+            <div class="card-body pb-0 pt-3 px-3">
+                <ul class="nav nav-tabs" id="ingredientesTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-por-receita-btn" data-bs-toggle="tab"
+                                data-bs-target="#tab-por-receita" type="button" role="tab">
+                            <i class="bi bi-eyedropper me-1"></i> Ingredientes por Receita
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-total-btn" data-bs-toggle="tab"
+                                data-bs-target="#tab-total" type="button" role="tab">
+                            <i class="bi bi-bar-chart me-1"></i> Total por Ingrediente
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content" id="ingredientesTabContent">
+                <div class="tab-pane fade show active" id="tab-por-receita" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Cód. Receita</th>
+                                    <th>Fórmula</th>
+                                    <th>Ingrediente</th>
+                                    <th>Qtd. na Receita</th>
+                                    <th>Qtd. Disponível</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in ingred_por_receita %}
+                                <tr>
+                                    <td><span class="badge-base badge-teal">{{ row['Codigo_receita'] }}</span></td>
+                                    <td><strong>{{ row['Nome_formula'] }}</strong></td>
+                                    <td>{{ row['Ingrediente_Nome'] }}</td>
+                                    <td>{{ row['Quantidade_ingrediente'] }}</td>
+                                    <td>
+                                        {% if row['Quantidade_disponivel'] is not none and row['Quantidade_disponivel'] <= 5 %}
+                                            <span class="badge-base badge-danger">{{ row['Quantidade_disponivel'] }}</span>
+                                        {% elif row['Quantidade_disponivel'] is not none and row['Quantidade_disponivel'] <= 20 %}
+                                            <span class="badge-base badge-warn">{{ row['Quantidade_disponivel'] }}</span>
+                                        {% else %}
+                                            <span class="badge-base badge-teal">{{ row['Quantidade_disponivel'] if row['Quantidade_disponivel'] is not none else '—' }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="5"><div class="empty-state"><i class="bi bi-eyedropper"></i>Nenhum ingrediente associado a receitas.</div></td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab-total" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Tipo</th>
+                                    <th>Qtd. Disponível</th>
+                                    <th>Nº Receitas (fc_contar_uso)</th>
+                                    <th>Total Usado em Receitas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in total_uso %}
+                                <tr>
+                                    <td><strong>{{ row['Nome'] }}</strong></td>
+                                    <td>{{ row['Tipo'] or '—' }}</td>
+                                    <td>
+                                        {% if row['Quantidade_disponivel'] is not none and row['Quantidade_disponivel'] <= 5 %}
+                                            <span class="badge-base badge-danger">{{ row['Quantidade_disponivel'] }}</span>
+                                        {% elif row['Quantidade_disponivel'] is not none and row['Quantidade_disponivel'] <= 20 %}
+                                            <span class="badge-base badge-warn">{{ row['Quantidade_disponivel'] }}</span>
+                                        {% else %}
+                                            <span class="badge-base badge-teal">{{ row['Quantidade_disponivel'] if row['Quantidade_disponivel'] is not none else '—' }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if row['Total_Receitas'] > 0 %}
+                                            <span class="badge-base badge-info">{{ row['Total_Receitas'] }}</span>
+                                        {% else %}
+                                            <span class="badge-base" style="background:#f1f5f9;color:var(--muted)">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ row['Total_Usado_Receitas'] }}</td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="5"><div class="empty-state"><i class="bi bi-bar-chart"></i>Nenhum dado disponível.</div></td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-md-6">
         <div class="card">

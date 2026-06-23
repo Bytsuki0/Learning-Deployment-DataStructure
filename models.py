@@ -577,10 +577,49 @@ def get_historico_completo_paciente(codigo_paciente):
 
 def contar_ingredientes_em_estoque():
     cur = mysql.connection.cursor(DictCursor)
-    cur.execute("SELECT COUNT(*) AS total FROM Ingredientes")
+    cur.execute("SELECT fc_contar_ingredientes_em_estoque() AS total")
     result = cur.fetchone()
     cur.close()
-    return result['total'] if result else 0
+    return result['total'] if result and result['total'] is not None else 0
+
+def get_ingredientes_por_receita():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            rt.Codigo_receita,
+            rt.Nome_formula,
+            i.Nome              AS Ingrediente_Nome,
+            i.Quantidade_disponivel,
+            c.Quantidade_ingrediente
+        FROM Criacao c
+        INNER JOIN Receita_Tratamentos rt
+            ON rt.Codigo_receita = c.Codigo_receita
+        INNER JOIN Ingredientes i
+            ON i.Codigo_ingrediente = c.Codigo_ingrediente
+        ORDER BY rt.Codigo_receita, i.Nome
+    """)
+    result = cur.fetchall()
+    cur.close()
+    return result
+
+def get_total_uso_ingredientes():
+    cur = mysql.connection.cursor(DictCursor)
+    cur.execute("""
+        SELECT
+            i.Codigo_ingrediente,
+            i.Nome,
+            i.Tipo,
+            i.Quantidade_disponivel,
+            fc_contar_uso_ingrediente(i.Codigo_ingrediente) AS Total_Receitas,
+            COALESCE(SUM(c.Quantidade_ingrediente), 0)      AS Total_Usado_Receitas
+        FROM Ingredientes i
+        LEFT JOIN Criacao c ON c.Codigo_ingrediente = i.Codigo_ingrediente
+        GROUP BY i.Codigo_ingrediente, i.Nome, i.Tipo, i.Quantidade_disponivel
+        ORDER BY Total_Receitas DESC, i.Nome
+    """)
+    result = cur.fetchall()
+    cur.close()
+    return result
 
 def contar_receitas():
     cur = mysql.connection.cursor(DictCursor)
